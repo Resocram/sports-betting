@@ -7,71 +7,49 @@ from books.bodog import *
 from books.pinnacle import *
 driver = uc.Chrome()
 
+def comparator(matchesA,matchesB):
+    for matchA,oddsA in matchesA:
+        for matchB, oddsB in matchesB:
+            if matchA.similar(matchB):
+                calculateScore(matchA,matchB,oddsA,oddsB)
+
 def hockey():
     bet99Matches = bet99Hockey(driver)
-    print("Scraped bet99")
     pinnacleMatches = pinnacleHockey(driver)
-    print("Scraped pinnacle")
     bodogMatches = bodogHockey(driver)
-    print("Scraped bodog")
-    for matchA in bet99Matches:
-        print(matchA[0])
-    print("-------")
-    for matchB in pinnacleMatches:
-        print(matchB[0])
-    print("+++++++++++-")
-    for matchC in bodogMatches:
-        print(matchC[0])
-        
-    for matchA in bet99Matches:
-        for matchB in pinnacleMatches:
-            for matchC in bodogMatches:
-                if matchA[0].similar(matchB[0]) and matchB[0].similar(matchC[0]):
-                    calculateScore(matchA[0],[matchA[1],matchB[1]])
+    comparator(bet99Matches,pinnacleMatches)
+    comparator(bet99Matches,bodogMatches)
+    comparator(bodogMatches,pinnacleMatches)
     print("done :)")
 
-hockey()
+
 def basketball():
-    pinnacleMatches = bet99Basketball()
-    print("Scraped pinnacle")
-    bodogMatches = bodogBasketball()
-    print("Scraped bodog")
-    for matchA in pinnacleMatches:
-        for matchB in bodogMatches:
-            if matchA[0].similar(matchB[0]):
-                calculateScore(matchA[0],[matchA[1],matchB[1]])
+    bet99Matches = bet99Basketball(driver)
+    pinnacleMatches = pinnacleBasketball(driver)
+    bodogMatches = bodogBasketball(driver)
+    comparator(bet99Matches,pinnacleMatches)
+    comparator(bet99Matches,bodogMatches)
+    comparator(bodogMatches,pinnacleMatches)
     print("done :)")
     
-
-
 def football():
-    pinnacleMatches = bet99Football()
-    print("Scraped pinnacle")
-    bodogMatches = bodogFootball()
-    print("Scraped bodog")
-    for matchA in pinnacleMatches:
-        for matchB in bodogMatches:
-            if matchA[0].similar(matchB[0]):
-                calculateScore(matchA[0],[matchA[1],matchB[1]])
+    bet99Matches = bet99Football(driver)
+    pinnacleMatches = pinnacleFootball(driver)
+    bodogMatches = bodogFootball(driver)
+    comparator(bet99Matches,pinnacleMatches)
+    comparator(bet99Matches,bodogMatches)
+    comparator(bodogMatches,pinnacleMatches)
     print("done :)")
     
 def soccer():
-    bet99Matches = bet99Soccer()
-    print("Scraped bet99Matches")
-    bodogMatches = bodogSoccer()
-    print("Scraped bodog")
-    for matchA in bet99Matches:
-        for matchB in bodogMatches:
-            if matchA[0].similar(matchB[0]):
-                print(matchA[0])
-                print(matchA[1].__dict__)
-                print(matchB[1].__dict__)
-                calculateScore(matchA[0],[matchA[1],matchB[1]])
-
+    bet99Matches = bet99Soccer(driver)
+    pinnacleMatches = pinnacleSoccer(driver)
+    bodogMatches = bodogSoccer(driver)
+    comparator(bet99Matches,pinnacleMatches)
+    comparator(bet99Matches,bodogMatches)
+    comparator(bodogMatches,pinnacleMatches)
     print("done :)")
-#hockey()
-#basketball()
-#football()
-#soccer()
-
-time.sleep(1000)
+hockey()
+basketball()
+football()
+soccer()

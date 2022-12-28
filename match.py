@@ -28,7 +28,7 @@ class Match:
         return score3 > 70
 
 class Odds:
-     def __init__(self,
+    def __init__(self,
                   teamAOdds,
                   teamBOdds,
                   teamAOdds1x2,
@@ -59,6 +59,8 @@ class Odds:
          self.underOdds = underOdds
          self.overPoints = overPoints
          self.overOdds = overOdds
+    def __str__(self):
+        return str(self.__dict__)
            
     
 def standardizeMatchOdds(teamA,
@@ -186,40 +188,53 @@ def calculateScoreMoneyLine(odd1,odd2):
     except:
         return NOSCORE
 
-def calculateScore(match,odds):
-    score1x2 = calculateScore1x2(odds[0],odds[1])
-    scoreHandicap = calculateScoreHandicap(odds[0],odds[1])
-    scoreOverUnder = calculateScoreOverUnder(odds[0],odds[1])
-    scoreMiddleHandicap = calculateScoreMiddleHandicap(odds[0],odds[1])
-    scoreMiddleOverUnder = calculateScoreMiddleOverUnder(odds[0],odds[1])
-    scoreMoneyLine = calculateScoreMoneyLine(odds[0],odds[1])
+def calculateScore(matchA,matchB,oddsA,oddsB):
+    score1x2 = calculateScore1x2(oddsA,oddsB)
+    scoreHandicap = calculateScoreHandicap(oddsA,oddsB)
+    scoreOverUnder = calculateScoreOverUnder(oddsA,oddsB)
+    scoreMiddleHandicap = calculateScoreMiddleHandicap(oddsA,oddsB)
+    scoreMiddleOverUnder = calculateScoreMiddleOverUnder(oddsA,oddsB)
+    scoreMoneyLine = calculateScoreMoneyLine(oddsA,oddsB)
     if scoreMoneyLine < 1:
         print("Score for Moneyline: " + str(scoreMoneyLine) + "\n")
-        print(match.__dict__)
-        print(str(odds[0].__dict__) + str(odds[1].__dict__))
+        print(matchA)
+        print(matchB)
+        print(oddsA)
+        print(oddsB)
+        return True
     if score1x2 < 1:
         print("Score for 1x2: " + str(score1x2) + "\n")
-        print(match.__dict__)
-        print(str(odds[0].__dict__) + str(odds[1].__dict__))
+        print(matchA)
+        print(matchB)
+        print(oddsA)
+        print(oddsB)
         return True
     if scoreHandicap < 1:
         print("Score for Handicap: " + str(scoreHandicap) + "\n")
-        print(match.__dict__)
-        print(str(odds[0].__dict__) + str(odds[1].__dict__))
+        print(matchA)
+        print(matchB)
+        print(oddsA)
+        print(oddsB)
         return True
     if scoreOverUnder < 1:
         print("Score for Over Under: " + str(scoreOverUnder) + "\n")
-        print(match.__dict__)
-        print(str(odds[0].__dict__) + str(odds[1].__dict__))
+        print(matchA)
+        print(matchB)
+        print(oddsA)
+        print(oddsB)
     if scoreMiddleHandicap < 1:
         print("Score for Middle Handicap: " + str(scoreMiddleHandicap) + "\n")
-        print(match.__dict__)
-        print(str(odds[0].__dict__) + str(odds[1].__dict__))
+        print(matchA)
+        print(matchB)
+        print(oddsA)
+        print(oddsB)
         return True
     if scoreMiddleOverUnder < 1:
         print("Score for Middle Over Under: " + str(scoreMiddleOverUnder) + "\n")
-        print(match.__dict__)
-        print(str(odds[0].__dict__) + str(odds[1].__dict__))
+        print(matchA)
+        print(matchB)
+        print(oddsA)
+        print(oddsB)
         return True
     return False
     

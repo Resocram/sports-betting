@@ -189,10 +189,6 @@ def bodogBasketball(driver):
                                 )
         matches.append((match,odds))
         oddsIndex += 1  
-    for match in matches:
-        print(match[0].__dict__)
-        print(match[1].__dict__)
-        print("\n")
 
     return matches
 

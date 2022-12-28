@@ -3,17 +3,21 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from match import *
-
+import time
 BET99_ODDS_SELECTOR = "._asb_events-table-row-markets"
 BET99_TEAM_NAME_SELECTOR = "._asb_events-table-row-competitor-name"
 
 def bet99(driver, url):
-    driver.get(url)
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)))
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_ODDS_SELECTOR)))
-    teamsBox = driver.find_elements(By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)
-    oddsBox = driver.find_elements(By.CSS_SELECTOR, BET99_ODDS_SELECTOR)
-    return teamsBox, oddsBox
+    while True:
+        driver.get(url)
+        time.sleep(5)
+        if driver.current_url == url:
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)))
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_ODDS_SELECTOR)))
+            teamsBox = driver.find_elements(By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)
+            oddsBox = driver.find_elements(By.CSS_SELECTOR, BET99_ODDS_SELECTOR)
+            return teamsBox, oddsBox
+        
 
 def bet99Teams(teams):
     teamsParsed = teams.text.split("\n")
