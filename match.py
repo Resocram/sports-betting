@@ -18,7 +18,14 @@ class Match:
         return "Team A:" + self.teamA + " Team B:" + self.teamB
     
     def similar(self,other):
-        return fuzz.ratio(self.teamA.lower()+self.teamB.lower(),other.teamA.lower()+other.teamB.lower()) > 80
+        s,t = self.teamA.lower()+self.teamB.lower(),other.teamA.lower()+other.teamB.lower()
+        #score = fuzz.ratio(s,t)
+        #score1 = fuzz.partial_ratio(s,t)
+        #score2 = fuzz.token_sort_ratio(s,t)
+        score3 = fuzz.token_set_ratio(s,t)
+        #score4 = fuzz.WRatio(s,t)
+        #print("Score for " + self.teamA.lower() + " " + self.teamB.lower() + " vs " + other.teamA.lower() + " " + other.teamB.lower() + ": " + str(score) + " " + str(score1) + " " + str(score2) + " " +str(score3) + " "+ str(score4))
+        return score3 > 70
 
 class Odds:
      def __init__(self,
@@ -64,7 +71,11 @@ def standardizeMatchOdds(teamA,
                          teamASpreadHandicap,
                          teamAOddsHandicap,
                          teamBSpreadHandicap,
-                         teamBOddsHandicap
+                         teamBOddsHandicap,
+                         underPoints = None,
+                         underOdds = None,
+                         overPoints = None,
+                         overOdds = None
                          ):
     if teamA < teamB:
         return (Match(teamA,teamB),Odds(
@@ -77,25 +88,25 @@ def standardizeMatchOdds(teamA,
             teamAOddsHandicap,
             teamBSpreadHandicap,
             teamBOddsHandicap,
-            None,
-            None,
-            None,
-            None))
+            underPoints,
+            underOdds,
+            overPoints,
+            overOdds))
     else:
         return (Match(teamB,teamA),Odds(
             teamBOdds,
             teamAOdds,
-            teamAOdds1x2,
-            drawOdds1x2,
             teamBOdds1x2,
-            teamASpreadHandicap,
-            teamAOddsHandicap,
+            drawOdds1x2,
+            teamAOdds1x2,
             teamBSpreadHandicap,
             teamBOddsHandicap,
-            None,
-            None,
-            None,
-            None))
+            teamASpreadHandicap,
+            teamAOddsHandicap,
+            underPoints,
+            underOdds,
+            overPoints,
+            overOdds))
 
 
 def calculateScore1x2(odd1,odd2):
