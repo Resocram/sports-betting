@@ -20,14 +20,16 @@ def bodog(driver, url):
         liveBox.click()
     except Exception as e:
         pass
+    showmores = 0
     try:
-        while True:
+        while showmores < 5:
             # Click show more to see more games
             WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, BODOG_SHOW_MORE_SELECTOR_ID)))
             showMoreBox = driver.find_element(By.ID, BODOG_SHOW_MORE_SELECTOR_ID)
             action = ActionChains(driver)
             action.move_to_element(showMoreBox).click()
             action.perform()
+            showmores += 1
     except Exception as e:
         pass
     try:
@@ -40,8 +42,8 @@ def bodog(driver, url):
             action.perform()
     except Exception as e:
         pass
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)))
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)))
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)))
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)))
 
     teamsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)
     oddsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)

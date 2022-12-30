@@ -40,7 +40,7 @@ def bet99Odds(odds):
         overPoints = float(overParsed[1])
         overOdds = americanToDecimal(int(oddsParsed[7])) 
         underParsed = oddsParsed[8].split(" ")
-        underPoints = float(underParsed[1])
+        underPoints = -float(underParsed[1])
         underOdds = americanToDecimal(int(oddsParsed[9])) 
         return teamAOdds, teamBOdds, teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, overPoints, overOdds, underPoints, underOdds
     return None, None, None, None, None, None, None, None, None, None
@@ -56,7 +56,7 @@ def bet99SoccerOdds(odds):
         overPoints = float(overParsed[1])
         overOdds = americanToDecimal(int(oddsParsed[7])) 
         underParsed = oddsParsed[8].split(" ")
-        underPoints = float(underParsed[1])
+        underPoints = -float(underParsed[1])
         underOdds = americanToDecimal(int(oddsParsed[9])) 
         return teamAOdds1x2, drawOdds1x2, teamBOdds1x2, overPoints, overOdds, underPoints, underOdds
     return None, None, None, None, None, None, None
@@ -175,6 +175,10 @@ def bet99Soccer(driver):
                             teamAOdds1x2,
                             drawOdds1x2,
                             teamBOdds1x2,
+                            None,
+                            None,
+                            None,
+                            None,
                             underPoints,
                             underOdds,
                             overPoints,

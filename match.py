@@ -16,16 +16,6 @@ class Match:
     
     def __str__(self):
         return "Team A:" + self.teamA + " Team B:" + self.teamB
-    
-    def similar(self,other):
-        s,t = self.teamA.lower()+self.teamB.lower(),other.teamA.lower()+other.teamB.lower()
-        #score = fuzz.ratio(s,t)
-        #score1 = fuzz.partial_ratio(s,t)
-        #score2 = fuzz.token_sort_ratio(s,t)
-        score3 = fuzz.token_set_ratio(s,t)
-        #score4 = fuzz.WRatio(s,t)
-        #print("Score for " + self.teamA.lower() + " " + self.teamB.lower() + " vs " + other.teamA.lower() + " " + other.teamB.lower() + ": " + str(score) + " " + str(score1) + " " + str(score2) + " " +str(score3) + " "+ str(score4))
-        return score3 > 70
 
 class Odds:
     def __init__(self,
@@ -61,7 +51,24 @@ class Odds:
          self.overOdds = overOdds
     def __str__(self):
         return str(self.__dict__)
-           
+
+def similarTeam(team1,team2):
+    s,t = team1.lower(), team2.lower()
+    #score = fuzz.ratio(s,t)
+    #score1 = fuzz.partial_ratio(s,t)
+    #score2 = fuzz.token_sort_ratio(s,t)
+    score3 = fuzz.token_set_ratio(s,t)
+    #score4 = fuzz.WRatio(s,t)
+    #print("Score for " + self.teamA.lower() + " " + self.teamB.lower() + " vs " + other.teamA.lower() + " " + other.teamB.lower() + ": " + str(score) + " " + str(score1) + " " + str(score2) + " " +str(score3) + " "+ str(score4))
+    return score3 > 70
+    
+def swapTeam(match,odds):
+    match.teamA, match.teamB = match.teamB, match.teamA
+    odds.teamAOdds, odds.teamBOdds = odds.teamBOdds, odds.teamAOdds
+    odds.teamAOdds1x2, odds.teamBOdds1x2 = odds.teamBOdds1x2, odds.teamAOdds1x2
+    odds.teamASpreadHandicap, odds.teamBSpreadHandicap = odds.teamBSpreadHandicap, odds.teamASpreadHandicap
+    odds.teamAOddsHandicap, odds.teamBOddsHandicap = odds.teamBOddsHandicap, odds.teamAOddsHandicap
+    return match, odds
     
 def standardizeMatchOdds(teamA,
                          teamB,
@@ -196,41 +203,42 @@ def calculateScore(matchA,matchB,oddsA,oddsB):
     scoreMiddleOverUnder = calculateScoreMiddleOverUnder(oddsA,oddsB)
     scoreMoneyLine = calculateScoreMoneyLine(oddsA,oddsB)
     if scoreMoneyLine < 1:
-        print("Score for Moneyline: " + str(scoreMoneyLine) + "\n")
+        print("Score for Moneyline: " + str(scoreMoneyLine))
         print(matchA)
         print(matchB)
         print(oddsA)
         print(oddsB)
         return True
     if score1x2 < 1:
-        print("Score for 1x2: " + str(score1x2) + "\n")
+        print("Score for 1x2: " + str(score1x2))
         print(matchA)
         print(matchB)
         print(oddsA)
         print(oddsB)
         return True
     if scoreHandicap < 1:
-        print("Score for Handicap: " + str(scoreHandicap) + "\n")
+        print("Score for Handicap: " + str(scoreHandicap))
         print(matchA)
         print(matchB)
         print(oddsA)
         print(oddsB)
         return True
     if scoreOverUnder < 1:
-        print("Score for Over Under: " + str(scoreOverUnder) + "\n")
+        print("Score for Over Under: " + str(scoreOverUnder))
         print(matchA)
         print(matchB)
         print(oddsA)
         print(oddsB)
+        return True
     if scoreMiddleHandicap < 1:
-        print("Score for Middle Handicap: " + str(scoreMiddleHandicap) + "\n")
+        print("Score for Middle Handicap: " + str(scoreMiddleHandicap))
         print(matchA)
         print(matchB)
         print(oddsA)
         print(oddsB)
         return True
     if scoreMiddleOverUnder < 1:
-        print("Score for Middle Over Under: " + str(scoreMiddleOverUnder) + "\n")
+        print("Score for Middle Over Under: " + str(scoreMiddleOverUnder))
         print(matchA)
         print(matchB)
         print(oddsA)
