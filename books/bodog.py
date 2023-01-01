@@ -42,12 +42,15 @@ def bodog(driver, url):
             action.perform()
     except Exception as e:
         pass
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)))
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)))
+    try:
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)))
+        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)))
 
-    teamsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)
-    oddsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)
-    return teamsBox, oddsBox
+        teamsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)
+        oddsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)
+        return teamsBox, oddsBox
+    except:
+        return bodog(driver,url)
     
 def bodogOddsHandicap(oddsHandicapBox):
     oddsHandicapBoxParsed = oddsHandicapBox.split(" ")

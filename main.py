@@ -59,10 +59,22 @@ def soccer():
 
 driver = uc.Chrome()
 while True:
-    hockey()
-    basketball()
-    football()
-    soccer()
+    try:
+        hockey()
+    except:
+        pass
+    try:
+        basketball()
+    except:
+        pass
+    try:
+        football()
+    except:
+        pass
+    try:
+        soccer()
+    except:
+        pass
 # Thread(target=hockey).start()
 # Thread(target=basketball).start()
 # Thread(target=football).start()

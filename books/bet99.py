@@ -12,11 +12,14 @@ def bet99(driver, url):
         driver.get(url)
         time.sleep(5)
         if driver.current_url == url:
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)))
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_ODDS_SELECTOR)))
-            teamsBox = driver.find_elements(By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)
-            oddsBox = driver.find_elements(By.CSS_SELECTOR, BET99_ODDS_SELECTOR)
-            return teamsBox, oddsBox
+            try:
+                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)))
+                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_ODDS_SELECTOR)))
+                teamsBox = driver.find_elements(By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)
+                oddsBox = driver.find_elements(By.CSS_SELECTOR, BET99_ODDS_SELECTOR)
+                return teamsBox, oddsBox
+            except:
+                pass
         
 
 def bet99Teams(teams):
