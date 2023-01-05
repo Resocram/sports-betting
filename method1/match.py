@@ -15,19 +15,19 @@ class Match:
 
 class Odds:
     def __init__(self,
-                  teamAOdds,
-                  teamBOdds,
-                  teamAOdds1x2,
-                  drawOdds1x2,
-                  teamBOdds1x2,
-                  teamASpreadHandicap,
-                  teamAOddsHandicap,
-                  teamBSpreadHandicap,
-                  teamBOddsHandicap,
-                  underPoints,
-                  underOdds,
-                  overPoints,
-                  overOdds
+                  teamAOdds = None,
+                  teamBOdds = None,
+                  teamAOdds1x2 = None,
+                  drawOdds1x2 = None,
+                  teamBOdds1x2 = None,
+                  teamASpreadHandicap = None,
+                  teamAOddsHandicap = None,
+                  teamBSpreadHandicap = None,
+                  teamBOddsHandicap = None,
+                  underPoints = None,
+                  underOdds = None,
+                  overPoints = None,
+                  overOdds  = None
                   ):
          self.teamAOdds = teamAOdds
          self.teamBOdds = teamBOdds
@@ -170,29 +170,29 @@ def calculateScore(match, oddsDf):
         print("Score for 1x2: " + str(score1x2[0]))
         print(match)
         print(score1x2[1])
-        print(oddsDf.loc[scoreMoneyLine[1],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
+        print(oddsDf.loc[score1x2[1],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
         print(score1x2[2])
-        print(oddsDf.loc[scoreMoneyLine[2],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
+        print(oddsDf.loc[score1x2[2],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
         print(score1x2[3])
-        print(oddsDf.loc[scoreMoneyLine[3],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
+        print(oddsDf.loc[score1x2[3],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
         print("==========")
     if scoreHandicap[0] < 1:
         print("==========")
         print("Score for Handicap: " + str(scoreHandicap[0]))
         print(match)
         print(scoreHandicap[1])
-        print(oddsDf.loc[scoreMoneyLine[1],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string())
+        print(oddsDf.loc[scoreHandicap[1],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string())
         print(scoreHandicap[2])
-        print(oddsDf.loc[scoreMoneyLine[2],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string())
+        print(oddsDf.loc[scoreHandicap[2],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string())
         print("==========")
     if scoreOverUnder[0] < 1:
         print("==========")
         print("Score for Over Under: " + str(scoreOverUnder[0]))
         print(match)
-        print(scoreMoneyLine[1])
-        print(oddsDf.loc[scoreMoneyLine[1],["underPoints","underOdds","overPoints","overOdds"]].to_string())
-        print(scoreMoneyLine[2])
-        print(oddsDf.loc[scoreMoneyLine[2],["underPoints","underOdds","overPoints","overOdds"]].to_string())
+        print(scoreOverUnder[1])
+        print(oddsDf.loc[scoreOverUnder[1],["underPoints","underOdds","overPoints","overOdds"]].to_string())
+        print(scoreOverUnder[2])
+        print(oddsDf.loc[scoreOverUnder[2],["underPoints","underOdds","overPoints","overOdds"]].to_string())
         print("==========")
     
 def americanToDecimal(american):

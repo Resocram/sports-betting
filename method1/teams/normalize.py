@@ -7,10 +7,10 @@ def findTeams(teamA,teamB,teams):
     newTeamB = ""
     newTeamBScore = 0
     for team in teams:
-        if fuzz.WRatio(teamA,team) > newTeamAScore:
+        if fuzz.WRatio(teamA,team) >= newTeamAScore:
             newTeamAScore = fuzz.WRatio(teamA,team)
             newTeamA = team
-        if fuzz.WRatio(teamB,team) > newTeamBScore:
+        if fuzz.WRatio(teamB,team) >= newTeamBScore:
             newTeamBScore = fuzz.WRatio(teamB,team)
             newTeamB = team
     if newTeamAScore < 70 or newTeamBScore < 70:

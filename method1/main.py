@@ -3,6 +3,7 @@ from match import *
 from books.bet99 import *
 from books.bodog import *
 from books.pinnacle import *
+from books.bet365 import *
 from selenium import webdriver
 from collections import defaultdict
 import pandas as pd
@@ -15,35 +16,84 @@ def comparator(matches):
 
 def hockey():
     matches = defaultdict(pd.DataFrame)
-    bet99Hockey(driver,matches)
-    pinnacleHockey(driver, matches)
-    bodogHockey(driver, matches)
+    try:
+        bet99Hockey(driver,matches)
+    except:
+        pass
+    try:
+        pinnacleHockey(driver, matches)
+    except:
+        pass
+    try:
+        bodogHockey(driver, matches)
+    except:
+        pass
+    try:
+        bet365Hockey(driver,matches)
+    except:
+        pass
     comparator(matches)
     print("done hockey")
 
 
 def basketball():
     matches = defaultdict(pd.DataFrame)
-    bet99Basketball(driver, matches)
-    pinnacleBasketball(driver, matches)
-    bodogBasketball(driver, matches)
-    comparator(matches)
+    try:
+        bet99Basketball(driver,matches)
+    except:
+        pass
+    try:
+        pinnacleBasketball(driver, matches)
+    except:
+        pass
+    try:
+        bodogBasketball(driver, matches)
+    except:
+        pass
+    try:
+        bet365Basketball(driver,matches)
+    except:
+        pass
     print("done basketball")
     
 def football():
     matches = defaultdict(pd.DataFrame)
-    bet99Football(driver, matches)
-    pinnacleFootball(driver, matches)
-    bodogFootball(driver, matches)
-    comparator(matches)
+    try:
+        bet99Football(driver,matches)
+    except:
+        pass
+    try:
+        pinnacleFootball(driver, matches)
+    except:
+        pass
+    try:
+        bodogFootball(driver, matches)
+    except:
+        pass
+    try:
+        bet365Football(driver,matches)
+    except:
+        pass
     print("done football")
     
 def soccer():
     matches = defaultdict(pd.DataFrame)
-    bet99Soccer(driver, matches)
-    pinnacleSoccer(driver, matches)
-    bodogSoccer(driver, matches)
-    comparator(matches)
+    try:
+        bet99Soccer(driver,matches)
+    except:
+        pass
+    try:
+        pinnacleSoccer(driver, matches)
+    except:
+        pass
+    try:
+        bodogSoccer(driver, matches)
+    except:
+        pass
+    try:
+        bet365Soccer(driver,matches)
+    except:
+        pass
     print("done soccer")
 op = webdriver.ChromeOptions()
 
