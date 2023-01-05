@@ -4,80 +4,52 @@ from books.bet99 import *
 from books.bodog import *
 from books.pinnacle import *
 from selenium import webdriver
+from collections import defaultdict
+import pandas as pd
 
-from threading import Thread
-def comparator(matchesA,matchesB,websiteA,websiteB):
-    for matchA,oddsA in matchesA:
-        for matchB, oddsB in matchesB:
-            if similarTeam(matchA.teamA, matchB.teamA) and similarTeam(matchA.teamB,matchB.teamB):
-                if calculateScore(matchA,matchB,oddsA,oddsB):
-                    print(websiteA + " " + websiteB + "\n")
-                    break
-            elif similarTeam(matchA.teamA, matchB.teamB) and similarTeam(matchA.teamB,matchB.teamA):
-                swappedMatchB, swappedOddsB = swapTeam(matchB,oddsB)
-                if calculateScore(matchA,matchB,swappedMatchB,swappedOddsB):
-                    print(websiteA + " " + websiteB + "\n")
-                    break
+def comparator(matches):
+    for match in matches:
+        odds = matches[match]
+        if len(odds) > 1:
+            calculateScore(match, odds) 
 
 def hockey():
-    bet99Matches = bet99Hockey(driver)
-    pinnacleMatches = pinnacleHockey(driver)
-    bodogMatches = bodogHockey(driver)
-    Thread(target=comparator,args=[bet99Matches, pinnacleMatches,"bet99","pinnacle"]).start()
-    Thread(target=comparator,args=[bet99Matches,bodogMatches,"bet99","bodog"]).start()
-    Thread(target=comparator,args=[bodogMatches,pinnacleMatches,"bodog","pinnacle"]).start()
+    matches = defaultdict(pd.DataFrame)
+    bet99Hockey(driver,matches)
+    pinnacleHockey(driver, matches)
+    bodogHockey(driver, matches)
+    comparator(matches)
     print("done hockey")
 
 
 def basketball():
-
-    bet99Matches = bet99Basketball(driver)
-    pinnacleMatches = pinnacleBasketball(driver)
-    bodogMatches = bodogBasketball(driver)
-    Thread(target=comparator,args=[bet99Matches, pinnacleMatches,"bet99","pinnacle"]).start()
-    Thread(target=comparator,args=[bet99Matches,bodogMatches,"bet99","bodog"]).start()
-    Thread(target=comparator,args=[bodogMatches,pinnacleMatches,"bodog","pinnacle"]).start()
+    matches = defaultdict(pd.DataFrame)
+    bet99Basketball(driver, matches)
+    pinnacleBasketball(driver, matches)
+    bodogBasketball(driver, matches)
+    comparator(matches)
     print("done basketball")
     
 def football():
-
-    bet99Matches = bet99Football(driver)
-    pinnacleMatches = pinnacleFootball(driver)
-    bodogMatches = bodogFootball(driver)
-    Thread(target=comparator,args=[bet99Matches, pinnacleMatches,"bet99","pinnacle"]).start()
-    Thread(target=comparator,args=[bet99Matches,bodogMatches,"bet99","bodog"]).start()
-    Thread(target=comparator,args=[bodogMatches,pinnacleMatches,"bodog","pinnacle"]).start()
+    matches = defaultdict(pd.DataFrame)
+    bet99Football(driver, matches)
+    pinnacleFootball(driver, matches)
+    bodogFootball(driver, matches)
+    comparator(matches)
     print("done football")
     
 def soccer():
-    bet99Matches = bet99Soccer(driver)
-    pinnacleMatches = pinnacleSoccer(driver)
-    bodogMatches = bodogSoccer(driver)
-    Thread(target=comparator,args=[bet99Matches, pinnacleMatches,"bet99","pinnacle"]).start()
-    Thread(target=comparator,args=[bet99Matches,bodogMatches,"bet99","bodog"]).start()
-    Thread(target=comparator,args=[bodogMatches,pinnacleMatches,"bodog","pinnacle"]).start()
+    matches = defaultdict(pd.DataFrame)
+    bet99Soccer(driver, matches)
+    pinnacleSoccer(driver, matches)
+    bodogSoccer(driver, matches)
+    comparator(matches)
     print("done soccer")
 op = webdriver.ChromeOptions()
-op.add_argument('--headless')
+
 driver = uc.Chrome(options=op)
-while True:
-    try:
-        hockey()
-    except:
-        pass
-    try:
-        basketball()
-    except:
-        pass
-    try:
-        football()
-    except:
-        pass
-    try:
-        soccer()
-    except:
-        pass
-# Thread(target=hockey).start()
-# Thread(target=basketball).start()
-# Thread(target=football).start()
-# Thread(target=soccer).start()
+driver.set_window_size(1440, 1440)
+hockey()
+basketball()
+football()
+soccer()

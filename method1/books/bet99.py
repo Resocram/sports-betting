@@ -1,9 +1,11 @@
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from match import *
 import time
+from teams.normalize import findTeams
+from teams.teams import *
+import pandas as pd
 BET99_ODDS_SELECTOR = "._asb_events-table-row-markets"
 BET99_TEAM_NAME_SELECTOR = "._asb_events-table-row-competitor-name"
 
@@ -43,7 +45,7 @@ def bet99Odds(odds):
         overPoints = float(overParsed[1])
         overOdds = americanToDecimal(int(oddsParsed[7])) 
         underParsed = oddsParsed[8].split(" ")
-        underPoints = -float(underParsed[1])
+        underPoints = float(underParsed[1])
         underOdds = americanToDecimal(int(oddsParsed[9])) 
         return teamAOdds, teamBOdds, teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, overPoints, overOdds, underPoints, underOdds
     return None, None, None, None, None, None, None, None, None, None
@@ -69,17 +71,17 @@ def bet99SoccerOdds(odds):
 # Sports
 # =====================
 
-BET99_HOCKEY_URL = "https://bet99.com/en/sport-betting#/alltopevents/events/70"
-BET99_BASKETBALL_URL = "https://bet99.com/en/sport-betting#/alltopevents/events/67"
-BET99_FOOTBALL_URL = "https://bet99.com/en/sport-betting#/alltopevents/events/75"
-BET99_SOCCER_URL = "https://bet99.com/en/sport-betting#/alltopevents/events/66"
+BET99_NHL_URL = "https://bet99.com/en/sport-betting#/tree/all/0/0/3232/0/odds/byleague"
+BET99_NBA_URL = "https://bet99.com/en/sport-betting#/tree/all/0/0/2980/0/odds/byleague"
+BET99_NFL_URL = "https://bet99.com/en/sport-betting#/tree/all/0/0/3281/0/odds/byleague"
+BET99_EPL_URL = "https://bet99.com/en/sport-betting#/tree/all/0/0/2936/0/odds/byleague"
 
-def bet99Hockey(driver):
-    matches = []
-    teamsBox,oddsBox = bet99(driver,BET99_HOCKEY_URL)
+def bet99Hockey(driver,matches):
+    teamsBox,oddsBox = bet99(driver,BET99_NHL_URL)
     oddsIndex = 0
     for i in range(0,len(teamsBox),2):
         teamA, teamB = teamsBox[i].text, teamsBox[i+1].text
+        teamA, teamB = findTeams(teamA,teamB,NHL_TEAMS)
         oddsParsed = oddsBox[oddsIndex]
         teamAOdds, teamBOdds, teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, overPoints, overOdds, underPoints, underOdds = bet99Odds(oddsParsed)
         match, odds = standardizeMatchOdds(
@@ -99,16 +101,16 @@ def bet99Hockey(driver):
                             overPoints,
                             overOdds
                             )
-        matches.append((match,odds))
+        oddsDf = pd.DataFrame.from_records([odds.__dict__],index=["bet99"])
+        matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1 
-    return matches
 
-def bet99Basketball(driver):
-    matches = []
-    teamsBox,oddsBox = bet99(driver,BET99_BASKETBALL_URL)
+def bet99Basketball(driver, matches):
+    teamsBox,oddsBox = bet99(driver,BET99_NBA_URL)
     oddsIndex = 0
     for i in range(0,len(teamsBox),2):
         teamA, teamB = teamsBox[i].text, teamsBox[i+1].text
+        teamA, teamB = findTeams(teamA,teamB,NBA_TEAMS)
         oddsParsed = oddsBox[oddsIndex]
         teamAOdds, teamBOdds, teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, overPoints, overOdds, underPoints, underOdds = bet99Odds(oddsParsed)
         match, odds = standardizeMatchOdds(
@@ -128,46 +130,45 @@ def bet99Basketball(driver):
                             overPoints,
                             overOdds
                             )
-        matches.append((match,odds))
+        oddsDf = pd.DataFrame.from_records([odds.__dict__],index=["bet99"])
+        matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1 
-    return matches
-
-def bet99Football(driver):
-    matches = []
-    teamsBox,oddsBox = bet99(driver,BET99_FOOTBALL_URL)
-    oddsIndex = 0
-    for i in range(0,len(teamsBox),2):
-        teamA, teamB = teamsBox[i].text, teamsBox[i+1].text
-        oddsParsed = oddsBox[oddsIndex]
-        teamAOdds, teamBOdds, teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, overPoints, overOdds, underPoints, underOdds = bet99Odds(oddsParsed)
-        match, odds = standardizeMatchOdds(
-                            teamA,
-                            teamB,
-                            teamAOdds,
-                            teamBOdds,
-                            None,
-                            None,
-                            None,
-                            teamASpreadHandicap,
-                            teamAOddsHandicap,
-                            teamBSpreadHandicap,
-                            teamBOddsHandicap,
-                            underPoints,
-                            underOdds,
-                            overPoints,
-                            overOdds
-                            )
-        matches.append((match,odds))
-        oddsIndex += 1 
-    return matches
-
-def bet99Soccer(driver):
-    matches = []
-    teamsBox,oddsBox = bet99(driver,BET99_SOCCER_URL)
-    oddsIndex = 0
-    for i in range(0,len(teamsBox),2):
         
+def bet99Football(driver, matches):
+    teamsBox,oddsBox = bet99(driver,BET99_NFL_URL)
+    oddsIndex = 0
+    for i in range(0,len(teamsBox),2):
         teamA, teamB = teamsBox[i].text, teamsBox[i+1].text
+        teamA, teamB = findTeams(teamA,teamB,NFL_TEAMS)
+        oddsParsed = oddsBox[oddsIndex]
+        teamAOdds, teamBOdds, teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, overPoints, overOdds, underPoints, underOdds = bet99Odds(oddsParsed)
+        match, odds = standardizeMatchOdds(
+                            teamA,
+                            teamB,
+                            teamAOdds,
+                            teamBOdds,
+                            None,
+                            None,
+                            None,
+                            teamASpreadHandicap,
+                            teamAOddsHandicap,
+                            teamBSpreadHandicap,
+                            teamBOddsHandicap,
+                            underPoints,
+                            underOdds,
+                            overPoints,
+                            overOdds
+                            )
+        oddsDf = pd.DataFrame.from_records([odds.__dict__],index=["bet99"])
+        matches[match] = pd.concat([matches[match],oddsDf])
+        oddsIndex += 1 
+
+def bet99Soccer(driver,matches):
+    teamsBox,oddsBox = bet99(driver,BET99_EPL_URL)
+    oddsIndex = 0
+    for i in range(0,len(teamsBox),2):
+        teamA, teamB = teamsBox[i].text, teamsBox[i+1].text
+        teamA, teamB = findTeams(teamA,teamB,EPL_TEAMS)
         oddsParsed = oddsBox[oddsIndex]
         teamAOdds1x2, drawOdds1x2, teamBOdds1x2, overPoints, overOdds, underPoints, underOdds = bet99SoccerOdds(oddsParsed)
         match, odds = standardizeMatchOdds(
@@ -187,6 +188,6 @@ def bet99Soccer(driver):
                             overPoints,
                             overOdds
                             )
-        matches.append((match,odds))
-        oddsIndex += 1 
-    return matches
+        oddsDf = pd.DataFrame.from_records([odds.__dict__],index=["bet99"])
+        matches[match] = pd.concat([matches[match],oddsDf])
+        oddsIndex += 1
