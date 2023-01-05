@@ -3,6 +3,7 @@ from match import *
 from books.bet99 import *
 from books.bodog import *
 from books.pinnacle import *
+from selenium import webdriver
 
 from threading import Thread
 def comparator(matchesA,matchesB,websiteA,websiteB):
@@ -56,8 +57,9 @@ def soccer():
     Thread(target=comparator,args=[bet99Matches,bodogMatches,"bet99","bodog"]).start()
     Thread(target=comparator,args=[bodogMatches,pinnacleMatches,"bodog","pinnacle"]).start()
     print("done soccer")
-
-driver = uc.Chrome()
+op = webdriver.ChromeOptions()
+op.add_argument('--headless')
+driver = uc.Chrome(options=op)
 while True:
     try:
         hockey()
