@@ -536,3 +536,80 @@ LALIGA_TEAMS = [
 "Valencia",
 "Villarreal"
 ]
+
+KHL_TEAMS=[
+"SKA Saint Petersburg",
+"HC Sochi",
+"Spartak Moscow",
+"Torpedo Nizhny Novgorod",
+"HC Vityaz",
+"CSKA Moscow",
+"Dinamo Minsk",
+"Dynamo Moscow",
+"Red Star Kunlun",
+"Lokomotiv Yaroslavl",
+"Severstal Cherepovets",
+"Ak Bars Kazan",
+"Avtomobilist Yekaterinburg",
+"Metallurg Magnitogorsk",
+"Neftekhimik Nizhnekamsk",
+"Traktor Chelyabinsk",
+"Admiral Vladivostok",
+"Amur Khabarovsk",
+"Avangard Omsk",
+"Barys Astana",
+"Salavat Yulaev Ufa",
+"Sibir Novosibirsk"
+]
+
+SHL_TEAMS=[
+    "Brynäs IF",
+    "Djurgårdens IF",
+    "Frölunda HC",
+    "Färjestad BK",
+    "Leksands IF",
+    "Linköping HC",
+    "Luleå HF",
+    "Malmö Redhawks",
+    "IK Oskarshamn",
+    "Rögle BK",
+    "Skellefteå AIK",
+    "Timrå IK",
+    "Växjö Lakers",
+    "Örebro HK",
+]
+
+ELH_TEAMS = [
+    "Vítkovice Ridera",
+    "Verva Litvínov",
+    "Sparta Praha",
+    "Rytíři Kladno",
+    "Oceláři Třinec",
+    "Mountfield HK",
+    "Kometa Brno",
+    "HC Škoda Plzeň",
+    "HC Olomouc",
+    "Energie Karlovy Vary",
+    "Dynamo Pardubice",
+    "ČEZ Motor České Budějovice",
+    "BK Mladá Boleslav",
+    "Bílí Tygři Liberec"
+]
+
+LIIGA_TEAMS = [
+    "HIFK",
+    "HPK",
+    "Ilves",
+    "Jukurit",
+    "JYP",
+    "KalPa",
+    "KooKoo",
+    "Kärpät",
+    "Lukko",
+    "Pelicans",
+    "SaiPa",
+    "Sport",
+    "Tappara",
+    "TPS",
+    "Ässät"
+]

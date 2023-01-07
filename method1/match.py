@@ -109,6 +109,8 @@ def calculateScore1x2(oddsDf):
         web1 = oddsDf["teamAOdds1x2"].idxmax()
         web2 = oddsDf["drawOdds1x2"].idxmax()
         web3 = oddsDf["teamBOdds1x2"].idxmax()
+        if web1 == web2 and web2 == web3:
+            return score, None, None, None
         return score, web1,web2,web3
     else:
         return score, None, None, None
@@ -123,6 +125,8 @@ def calculateScoreHandicap(oddsDf):
         if score < 1:
             web1 = newDf["teamAOddsHandicap"].idxmax()
             web2 = newDf["teamBOddsHandicap"].idxmax()
+            if web1 == web2:
+                return score, None, None
             return score, web1, web2 
     return score, None, None
 
@@ -136,6 +140,8 @@ def calculateScoreOverUnder(oddsDf):
         if score < 1:
             web1 = newDf["underOdds"].idxmax()
             web2 = newDf["overOdds"].idxmax()
+            if web1 == web2:
+                return score, None, None
             return score, web1, web2 
     return score, None, None
     
@@ -146,6 +152,8 @@ def calculateScoreMoneyLine(oddsDf):
     if score < 1:
         web1 = oddsDf["teamAOdds"].idxmax()
         web2 = oddsDf["teamBOdds"].idxmax()
+        if web1 == web2:
+            return score, None, None
         return score, web1,web2
     else:
         return score, None, None
@@ -158,7 +166,7 @@ def calculateScore(match, oddsDf):
     scoreHandicap = calculateScoreHandicap(oddsDf)
     scoreOverUnder = calculateScoreOverUnder(oddsDf)
     
-    if scoreMoneyLine[0] < 1:
+    if scoreMoneyLine[0] < 1 and scoreMoneyLine[1] != None and scoreMoneyLine[2] != None:
         msg = "==========" + "\n" + \
               "Score for Moneyline: " + str(scoreMoneyLine[0]) + "\n" + \
               str(match) + "\n" + \
@@ -169,7 +177,7 @@ def calculateScore(match, oddsDf):
               "=========="
         print(msg)
         send(msg)
-    if score1x2[0] < 1:
+    if score1x2[0] < 1 and score1x2[1] != None and score1x2[2] != None and score1x2[3] != None:
         msg = "==========" + "\n" + \
               "Score for 1x2: " + str(score1x2[0]) + "\n" +  \
               str(match) + "\n" + \
@@ -182,7 +190,7 @@ def calculateScore(match, oddsDf):
               "=========="
         print(msg)
         send(msg)
-    if scoreHandicap[0] < 1:
+    if scoreHandicap[0] < 1 and scoreHandicap[1] != None and scoreHandicap[2] != None:
         msg = "==========" + "\n" + \
               "Score for Handicap: " + str(scoreHandicap[0]) + "\n" + \
               str(match) + "\n" + \
@@ -193,7 +201,7 @@ def calculateScore(match, oddsDf):
               "=========="
         print(msg)
         send(msg)
-    if scoreOverUnder[0] < 1:
+    if scoreOverUnder[0] < 1 and scoreOverUnder[1] != None and scoreOverUnder[2] != None:
         msg = "==========" + "\n" + \
               "Score for Over Under: " + str(scoreOverUnder[0]) + "\n" + \
               str(match) + "\n" + \

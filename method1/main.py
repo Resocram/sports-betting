@@ -4,11 +4,12 @@ from books.bet99 import *
 from books.bodog import *
 from books.pinnacle import *
 from books.bet365 import *
+from books.stake import *
 from selenium import webdriver
 from collections import defaultdict
 from leagues.league import *
 
-websites = ["bet365", "bet99", "bodog", "pinnacle"]
+websites = ["stake", "bet365", "bet99", "bodog", "pinnacle"]
 
 def comparator(matches):
     for match in matches:
@@ -26,28 +27,32 @@ def compute(league, websites, functions):
     return matches
 
 def hockey(league):
-    functions = [bet365Hockey, bet99Hockey, bodogHockey,pinnacleHockey]
+    functions = [stakeHockey, bet365Hockey, bet99Hockey, bodogHockey,pinnacleHockey]
     matches = compute(league,websites,functions)
     comparator(matches)
     print("done " + league.name)
+    return matches
 
 def basketball(league):
-    functions = [bet365Basketball, bet99Basketball, bodogBasketball,pinnacleBasketball]
+    functions = [stakeBasketball, bet365Basketball, bet99Basketball, bodogBasketball,pinnacleBasketball]
     matches = compute(league,websites,functions)
     comparator(matches)
     print("done " + league.name)
+    return matches
     
 def football(league):
-    functions = [bet365Football, bet99Football, bodogFootball, pinnacleFootball]
+    functions = [stakeFootball, bet365Football, bet99Football, bodogFootball, pinnacleFootball]
     matches = compute(league,websites,functions)
     comparator(matches)
     print("done " + league.name)
+    return matches
 
 def soccer(league):
-    functions = [bet365Soccer, bodogSoccer, bodogSoccer, pinnacleSoccer]
+    functions = [stakeSoccer, bet365Soccer, bet99Soccer, bodogSoccer, pinnacleSoccer]
     matches = compute(league,websites,functions)
     comparator(matches)
     print("done " + league.name)
+    return matches
 
 op = webdriver.ChromeOptions()
 
@@ -55,14 +60,17 @@ driver = uc.Chrome(options=op)
 driver.set_window_size(1440, 1440)
 
 while True:
-    #basketball(EUROLEAGUE)
+    hockey(LIIGA)
+    hockey(SHL)
+    basketball(EUROLEAGUE)
+    hockey(KHL)
     soccer(LALIGA)
     hockey(NHL)
     basketball(NBA)
     basketball(NCAAB)
     football(NFL)
     soccer(EPL)
-    #basketball(CBA)
+    basketball(CBA)
         
     
 
