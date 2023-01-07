@@ -1,3 +1,5 @@
+import http.client, urllib
+
 class Match:
     def __init__(self, teamA, teamB):
         self.teamA = teamA
@@ -157,49 +159,66 @@ def calculateScore(match, oddsDf):
     scoreOverUnder = calculateScoreOverUnder(oddsDf)
     
     if scoreMoneyLine[0] < 1:
-        print("==========")
-        print("Score for Moneyline: " + str(scoreMoneyLine[0]))
-        print(match)
-        print(scoreMoneyLine[1])
-        print(oddsDf.loc[scoreMoneyLine[1],["teamAOdds","teamBOdds"]].to_string())
-        print(scoreMoneyLine[2])
-        print(oddsDf.loc[scoreMoneyLine[2],["teamAOdds","teamBOdds"]].to_string())
-        print("==========")
+        msg = "==========" + "\n" + \
+              "Score for Moneyline: " + str(scoreMoneyLine[0]) + "\n" + \
+              str(match) + "\n" + \
+              str(scoreMoneyLine[1]) + "\n" + \
+              oddsDf.loc[scoreMoneyLine[1],["teamAOdds","teamBOdds"]].to_string() + "\n" + \
+              str(scoreMoneyLine[2]) + "\n" + \
+              oddsDf.loc[scoreMoneyLine[2],["teamAOdds","teamBOdds"]].to_string()+ "\n" + \
+              "=========="
+        print(msg)
+        send(msg)
     if score1x2[0] < 1:
-        print("==========")
-        print("Score for 1x2: " + str(score1x2[0]))
-        print(match)
-        print(score1x2[1])
-        print(oddsDf.loc[score1x2[1],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
-        print(score1x2[2])
-        print(oddsDf.loc[score1x2[2],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
-        print(score1x2[3])
-        print(oddsDf.loc[score1x2[3],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string())
-        print("==========")
+        msg = "==========" + "\n" + \
+              "Score for 1x2: " + str(score1x2[0]) + "\n" +  \
+              str(match) + "\n" + \
+              str(score1x2[1]) + "\n" + \
+              oddsDf.loc[score1x2[1],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string() + "\n" + \
+              str*score1x2[2]() + "\n" + \
+              oddsDf.loc[score1x2[2],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string() + "\n" + \
+              str(score1x2[3]) + "\n" + \
+              oddsDf.loc[score1x2[3],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string() + "\n" + \
+              "=========="
+        print(msg)
+        send(msg)
     if scoreHandicap[0] < 1:
-        print("==========")
-        print("Score for Handicap: " + str(scoreHandicap[0]))
-        print(match)
-        print(scoreHandicap[1])
-        print(oddsDf.loc[scoreHandicap[1],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string())
-        print(scoreHandicap[2])
-        print(oddsDf.loc[scoreHandicap[2],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string())
-        print("==========")
+        msg = "==========" + "\n" + \
+              "Score for Handicap: " + str(scoreHandicap[0]) + "\n" + \
+              str(match) + "\n" + \
+              str(scoreHandicap[1]) + "\n" + \
+              oddsDf.loc[scoreHandicap[1],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string() + "\n" + \
+              str(scoreHandicap[2]) + "\n" + \
+              oddsDf.loc[scoreHandicap[2],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string() + "\n" + \
+              "=========="
+        print(msg)
+        send(msg)
     if scoreOverUnder[0] < 1:
-        print("==========")
-        print("Score for Over Under: " + str(scoreOverUnder[0]))
-        print(match)
-        print(scoreOverUnder[1])
-        print(oddsDf.loc[scoreOverUnder[1],["underPoints","underOdds","overPoints","overOdds"]].to_string())
-        print(scoreOverUnder[2])
-        print(oddsDf.loc[scoreOverUnder[2],["underPoints","underOdds","overPoints","overOdds"]].to_string())
-        print("==========")
-    
+        msg = "==========" + "\n" + \
+              "Score for Over Under: " + str(scoreOverUnder[0]) + "\n" + \
+              str(match) + "\n" + \
+              str(scoreOverUnder[1]) + "\n" + \
+              oddsDf.loc[scoreOverUnder[1],["underPoints","underOdds","overPoints","overOdds"]].to_string() + "\n" + \
+              str(scoreOverUnder[2]) + "\n" + \
+              oddsDf.loc[scoreOverUnder[2],["underPoints","underOdds","overPoints","overOdds"]].to_string() + "\n" + \
+              "=========="
+        print(msg)
+        send(msg)
+              
 def americanToDecimal(american):
     if american >= 0:
         return round(1+american/100,3)
     return round(1 - 100/american,3)
 
+def send(msg):
+    conn = http.client.HTTPSConnection("api.pushover.net:443")
+    conn.request("POST", "/1/messages.json",
+    urllib.parse.urlencode({
+        "token": "a3uxep39ni2r8cwoyks8zhfdqzf8ui",
+        "user": "ufsr1fk5oe2zcbukgszoqgrvqepeob",
+        "message": msg,
+    }), { "Content-type": "application/x-www-form-urlencoded" })
+    conn.getresponse()
 
 
 

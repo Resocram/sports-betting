@@ -2,8 +2,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from match import *
-from teams.teams import *
-from teams.normalize import findTeams
+from leagues.normalize import *
 import pandas as pd
 BODOG_PLUS_SELECTOR = ".icon.header-collapsible__icon.league-header-collapsible__icon.icon-plus"
 BODOG_TEAM_NAME_SELECTOR = ".competitors"
@@ -13,15 +12,11 @@ BODOG_SHOW_MORE_SELECTOR_ID = "showMore"
 
 def bodog(driver, url):
     driver.get(url)
-    try:
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)))
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)))
-
-        teamsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)
-        oddsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)
-        return teamsBox, oddsBox
-    except:
-        return bodog(driver,url)
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)))
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)))
+    teamsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)
+    oddsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)
+    return teamsBox, oddsBox
     
 def bodogOddsHandicap(oddsHandicapBox):
     oddsHandicapBoxParsed = oddsHandicapBox.split(" ")
@@ -98,20 +93,16 @@ def bodogTeams(teams,numTeams=2):
 # Sports
 # =====================
 
-BODOG_NHL_URL = "https://www.bodog.eu/sports/hockey/nhl"
-BODOG_NBA_URL = "https://www.bodog.eu/sports/basketball/nba"
-BODOG_NFL_URL = "https://www.bodog.eu/sports/football/nfl"
-BODOG_EPL_URL = "https://www.bodog.eu/sports/soccer/europe/england/premier-league"
 
-def bodogHockey(driver,matches):
-    teamsBox,oddsBox = bodog(driver,BODOG_NHL_URL)
+def bodogHockey(driver,matches,leagueTeams,url):
+    teamsBox,oddsBox = bodog(driver,url)
     oddsIndex = 0
     for team in teamsBox:
         teamA, teamB = bodogTeams(team)
         if teamA is None or teamB is None:
             oddsIndex += 1
             continue
-        teamA, teamB = findTeams(teamA,teamB,NHL_TEAMS)
+        teamA, teamB = findTeams(teamA,teamB,leagueTeams)
         oddsParsed = oddsBox[oddsIndex]
         teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, teamAOdds, teamBOdds, overPoints, overOdds, underPoints, underOdds = bodogOdds(oddsParsed)
         match, odds = standardizeMatchOdds(
@@ -135,15 +126,15 @@ def bodogHockey(driver,matches):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1  
 
-def bodogBasketball(driver, matches):
-    teamsBox,oddsBox = bodog(driver,BODOG_NBA_URL)
+def bodogBasketball(driver, matches, leagueTeams, url):
+    teamsBox,oddsBox = bodog(driver,url)
     oddsIndex = 0
     for team in teamsBox:
         teamA, teamB = bodogTeams(team)
         if teamA is None or teamB is None:
             oddsIndex += 1
             continue
-        teamA, teamB = findTeams(teamA,teamB,NBA_TEAMS)
+        teamA, teamB = findTeams(teamA,teamB,leagueTeams)
         oddsParsed = oddsBox[oddsIndex]
         teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, teamAOdds, teamBOdds, overPoints, overOdds, underPoints, underOdds = bodogOdds(oddsParsed)
         match, odds = standardizeMatchOdds(
@@ -167,15 +158,15 @@ def bodogBasketball(driver, matches):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1  
 
-def bodogFootball(driver, matches):
-    teamsBox,oddsBox = bodog(driver,BODOG_NFL_URL)
+def bodogFootball(driver, matches,leagueTeams, url):
+    teamsBox,oddsBox = bodog(driver,url)
     oddsIndex = 0
     for team in teamsBox:
         teamA, teamB = bodogTeams(team)
         if teamA is None or teamB is None:
             oddsIndex += 1
             continue
-        teamA, teamB = findTeams(teamA,teamB,NFL_TEAMS)
+        teamA, teamB = findTeams(teamA,teamB,leagueTeams)
         oddsParsed = oddsBox[oddsIndex]
         teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, teamAOdds, teamBOdds, overPoints, overOdds, underPoints, underOdds = bodogOdds(oddsParsed)
         match, odds = standardizeMatchOdds(
@@ -199,15 +190,15 @@ def bodogFootball(driver, matches):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1  
 
-def bodogSoccer(driver, matches):
-    teamsBox,oddsBox = bodog(driver,BODOG_EPL_URL)
+def bodogSoccer(driver, matches,leagueTeams, url):
+    teamsBox,oddsBox = bodog(driver,url)
     oddsIndex = 0
     for team in teamsBox:
         teamA, teamB = bodogTeams(team,3)
         if teamA is None or teamB is None:
             oddsIndex += 1
             continue
-        teamA, teamB = findTeams(teamA,teamB,EPL_TEAMS)
+        teamA, teamB = findTeams(teamA,teamB,leagueTeams)
         oddsParsed = oddsBox[oddsIndex]
         teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap, teamAOdds1x2, drawOdds1x2, teamBOdds1x2, overPoints, overOdds, underPoints, underOdds = bodogSoccerOdds(oddsParsed)
         match, odds = standardizeMatchOdds(

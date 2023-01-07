@@ -6,7 +6,9 @@ from books.pinnacle import *
 from books.bet365 import *
 from selenium import webdriver
 from collections import defaultdict
-import pandas as pd
+from leagues.league import *
+
+websites = ["bet365", "bet99", "bodog", "pinnacle"]
 
 def comparator(matches):
     for match in matches:
@@ -14,92 +16,54 @@ def comparator(matches):
         if len(odds) > 1:
             calculateScore(match, odds) 
 
-def hockey():
+def compute(league, websites, functions):
     matches = defaultdict(pd.DataFrame)
-    try:
-        bet99Hockey(driver,matches)
-    except:
-        pass
-    try:
-        pinnacleHockey(driver, matches)
-    except:
-        pass
-    try:
-        bodogHockey(driver, matches)
-    except:
-        pass
-    try:
-        bet365Hockey(driver,matches)
-    except:
-        pass
+    for i in range(len(functions)):
+        try:
+            functions[i](driver,matches,league.teams,league.urls[i])
+        except:
+            print("Did not do " + league.name + " on " + websites[i])
+    return matches
+
+def hockey(league):
+    functions = [bet365Hockey, bet99Hockey, bodogHockey,pinnacleHockey]
+    matches = compute(league,websites,functions)
     comparator(matches)
-    print("done hockey")
+    print("done " + league.name)
 
+def basketball(league):
+    functions = [bet365Basketball, bet99Basketball, bodogBasketball,pinnacleBasketball]
+    matches = compute(league,websites,functions)
+    comparator(matches)
+    print("done " + league.name)
+    
+def football(league):
+    functions = [bet365Football, bet99Football, bodogFootball, pinnacleFootball]
+    matches = compute(league,websites,functions)
+    comparator(matches)
+    print("done " + league.name)
 
-def basketball():
-    matches = defaultdict(pd.DataFrame)
-    try:
-        bet99Basketball(driver,matches)
-    except:
-        pass
-    try:
-        pinnacleBasketball(driver, matches)
-    except:
-        pass
-    try:
-        bodogBasketball(driver, matches)
-    except:
-        pass
-    try:
-        bet365Basketball(driver,matches)
-    except:
-        pass
-    print("done basketball")
-    
-def football():
-    matches = defaultdict(pd.DataFrame)
-    try:
-        bet99Football(driver,matches)
-    except:
-        pass
-    try:
-        pinnacleFootball(driver, matches)
-    except:
-        pass
-    try:
-        bodogFootball(driver, matches)
-    except:
-        pass
-    try:
-        bet365Football(driver,matches)
-    except:
-        pass
-    print("done football")
-    
-def soccer():
-    matches = defaultdict(pd.DataFrame)
-    try:
-        bet99Soccer(driver,matches)
-    except:
-        pass
-    try:
-        pinnacleSoccer(driver, matches)
-    except:
-        pass
-    try:
-        bodogSoccer(driver, matches)
-    except:
-        pass
-    try:
-        bet365Soccer(driver,matches)
-    except:
-        pass
-    print("done soccer")
+def soccer(league):
+    functions = [bet365Soccer, bodogSoccer, bodogSoccer, pinnacleSoccer]
+    matches = compute(league,websites,functions)
+    comparator(matches)
+    print("done " + league.name)
+
 op = webdriver.ChromeOptions()
 
 driver = uc.Chrome(options=op)
 driver.set_window_size(1440, 1440)
-hockey()
-basketball()
-football()
-soccer()
+
+while True:
+    #basketball(EUROLEAGUE)
+    soccer(LALIGA)
+    hockey(NHL)
+    basketball(NBA)
+    basketball(NCAAB)
+    football(NFL)
+    soccer(EPL)
+    #basketball(CBA)
+        
+    
+
+

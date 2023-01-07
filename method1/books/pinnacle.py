@@ -2,11 +2,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from books.bet99 import *
-from teams.normalize import findTeams
-from teams.teams import *
+from leagues.normalize import *
 import pandas as pd
+
 PINNACLE_TEAMS_SELECTOR = ".style_matchupMetadata__Ey_nj"
 PINNACLE_ODDS_SELECTOR = ".style_buttons__XEQem"
+
+LIVE = False
 
 def pinnacle(driver, url):
     driver.get(url)
@@ -17,7 +19,10 @@ def pinnacle(driver, url):
     return teamsBox,oddsBox
 
 def pinnacleTeams(teams):
-    teamA, teamB, date = teams.split("\n")
+    teamsSplit = teams.split("\n")
+    teamA = teamsSplit[0]
+    teamB = teamsSplit[1]
+    date = teamsSplit[2]
     return teamA, teamB, date
 
 def pinnacleOdds1x2(odds1x2Box):
@@ -61,21 +66,16 @@ def pinnacleOddsMoneyline(oddsMoneylineBox):
 # Sports
 # =====================
 
-PINNACLE_NHL_URL = "https://www.pinnacle.com/en/hockey/nhl/matchups#period:0"
-PINNACLE_NBA_URL = "https://www.pinnacle.com/en/basketball/nba/matchups#period:0"
-PINNABLE_NFL_URL = "https://www.pinnacle.com/en/football/nfl/matchups#period:0"
-PINNACLE_EPL_URL = "https://www.pinnacle.com/en/soccer/england-premier-league/matchups#all"
 
-
-def pinnacleHockey(driver, matches):
-    teamsBox,oddsBox = pinnacle(driver,PINNACLE_NHL_URL)
+def pinnacleHockey(driver, matches,leagueTeams, url):
+    teamsBox,oddsBox = pinnacle(driver,url)
     oddsIndex = 0
     for teams in teamsBox:
-        teamA,teamB,date = pinnacleTeams(teams.text)
-        teamA, teamB = findTeams(teamA,teamB,NHL_TEAMS)
+        teamA,teamB, date = pinnacleTeams(teams.text)
+        teamA, teamB = findTeams(teamA,teamB,leagueTeams)
         while oddsBox[oddsIndex].text == "1\nX\n2" or oddsBox[oddsIndex].text == "HANDICAP" or oddsBox[oddsIndex].text == "MONEY LINE":
             oddsIndex += 3
-        if "Live" in date:
+        if "Live" in date and not LIVE:
             oddsIndex += 3
             continue
         teamAOdds, teamBOdds = pinnacleOddsMoneyline(oddsBox[oddsIndex])
@@ -98,16 +98,16 @@ def pinnacleHockey(driver, matches):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 3
 
-def pinnacleBasketball(driver, matches):
-    teamsBox,oddsBox = pinnacle(driver,PINNACLE_NBA_URL)
+def pinnacleBasketball(driver, matches, leagueTeams, url):
+    teamsBox,oddsBox = pinnacle(driver,url)
     oddsIndex = 0
     
     for teams in teamsBox:
-        teamA,teamB,date = pinnacleTeams(teams.text)
-        teamA, teamB = findTeams(teamA,teamB,NBA_TEAMS)
+        teamA,teamB, date  = pinnacleTeams(teams.text)
+        teamA, teamB = findTeams(teamA,teamB,leagueTeams)
         while oddsBox[oddsIndex].text == "1\nX\n2" or oddsBox[oddsIndex].text == "HANDICAP" or oddsBox[oddsIndex].text == "MONEY LINE":
             oddsIndex += 3
-        if "Live" in date:
+        if "Live" in date and not LIVE:
             oddsIndex += 3
             continue
         teamASpreadHandicap,teamAOddsHandicap,teamBSpreadHandicap,teamBOddsHandicap = pinnacleOddsHandicap(oddsBox[oddsIndex])
@@ -134,16 +134,16 @@ def pinnacleBasketball(driver, matches):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 3
 
-def pinnacleFootball(driver, matches):
-    teamsBox,oddsBox = pinnacle(driver,PINNABLE_NFL_URL)
+def pinnacleFootball(driver, matches,leagueTeams, url):
+    teamsBox,oddsBox = pinnacle(driver,url)
     oddsIndex = 0
     
     for teams in teamsBox:
-        teamA,teamB,date = pinnacleTeams(teams.text)
-        teamA, teamB = findTeams(teamA,teamB,NFL_TEAMS)
+        teamA,teamB, date  = pinnacleTeams(teams.text)
+        teamA, teamB = findTeams(teamA,teamB,leagueTeams)
         while oddsBox[oddsIndex].text == "1\nX\n2" or oddsBox[oddsIndex].text == "HANDICAP" or oddsBox[oddsIndex].text == "MONEY LINE":
             oddsIndex += 3
-        if "Live" in date:
+        if "Live" in date and not LIVE:
             oddsIndex += 3
             continue
         teamASpreadHandicap,teamAOddsHandicap,teamBSpreadHandicap,teamBOddsHandicap = pinnacleOddsHandicap(oddsBox[oddsIndex])
@@ -170,16 +170,16 @@ def pinnacleFootball(driver, matches):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 3
 
-def pinnacleSoccer(driver, matches):
-    teamsBox,oddsBox = pinnacle(driver,PINNACLE_EPL_URL)
+def pinnacleSoccer(driver, matches,leagueTeams, url):
+    teamsBox,oddsBox = pinnacle(driver,url)
     oddsIndex = 0
     
     for teams in teamsBox:
-        teamA,teamB,date = pinnacleTeams(teams.text)
-        teamA, teamB = findTeams(teamA,teamB,EPL_TEAMS)
+        teamA,teamB, date = pinnacleTeams(teams.text)
+        teamA, teamB = findTeams(teamA,teamB,leagueTeams)
         while oddsBox[oddsIndex].text == "1\nX\n2" or oddsBox[oddsIndex].text == "HANDICAP" or oddsBox[oddsIndex].text == "MONEY LINE":
             oddsIndex += 3
-        if "Live" in date:
+        if "Live" in date and not LIVE:
             oddsIndex += 3
             continue
         teamAOdds1x2,drawOdds1x2,teamBOdds1x2 = pinnacleOdds1x2(oddsBox[oddsIndex])
