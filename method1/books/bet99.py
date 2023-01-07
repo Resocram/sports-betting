@@ -5,19 +5,30 @@ from match import *
 import time
 from leagues.normalize import *
 import pandas as pd
+import sys
 BET99_ODDS_SELECTOR = "._asb_events-table-row-markets"
 BET99_TEAM_NAME_SELECTOR = "._asb_events-table-row-competitor-name"
+RETRY_TIMES = 5
 
-def bet99(driver, url):
-    while True:
-        driver.get(url)
-        time.sleep(5)
-        if driver.current_url == url:
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)))
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_ODDS_SELECTOR)))
-            teamsBox = driver.find_elements(By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)
-            oddsBox = driver.find_elements(By.CSS_SELECTOR, BET99_ODDS_SELECTOR)
-            return teamsBox, oddsBox
+def bet99(driver, url, leagueName):
+    retrytimes = 0
+    while retrytimes < RETRY_TIMES:
+        try:
+            driver.get(url)
+            time.sleep(5)
+            if driver.current_url == url:
+                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)))
+                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET99_ODDS_SELECTOR)))
+                teamsBox = driver.find_elements(By.CSS_SELECTOR, BET99_TEAM_NAME_SELECTOR)
+                oddsBox = driver.find_elements(By.CSS_SELECTOR, BET99_ODDS_SELECTOR)
+                return teamsBox, oddsBox
+            else:
+                retrytimes += 1
+        except:
+            retrytimes += 1
+    print("Bet99 retried " + str(RETRY_TIMES) + " times for " + leagueName)
+    sys.exit()
+
         
 
 def bet99Teams(teams):
@@ -68,8 +79,8 @@ def bet99SoccerOdds(odds):
 # =====================
 
 
-def bet99Hockey(driver,matches,leagueTeams, url):
-    teamsBox,oddsBox = bet99(driver,url)
+def bet99Hockey(driver,matches, leagueName,leagueTeams, url):
+    teamsBox,oddsBox = bet99(driver,url, leagueName)
     oddsIndex = 0
     for i in range(0,len(teamsBox),2):
         teamA, teamB = teamsBox[i].text, teamsBox[i+1].text
@@ -97,8 +108,8 @@ def bet99Hockey(driver,matches,leagueTeams, url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1 
 
-def bet99Basketball(driver, matches,leagueTeams,url):
-    teamsBox,oddsBox = bet99(driver,url)
+def bet99Basketball(driver, matches, leagueName,leagueTeams,url):
+    teamsBox,oddsBox = bet99(driver,url, leagueName)
     oddsIndex = 0
     for i in range(0,len(teamsBox),2):
         teamA, teamB = teamsBox[i].text, teamsBox[i+1].text
@@ -126,8 +137,8 @@ def bet99Basketball(driver, matches,leagueTeams,url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1 
         
-def bet99Football(driver, matches,leagueTeams, url):
-    teamsBox,oddsBox = bet99(driver,url)
+def bet99Football(driver, matches, leagueName,leagueTeams, url):
+    teamsBox,oddsBox = bet99(driver,url, leagueName)
     oddsIndex = 0
     for i in range(0,len(teamsBox),2):
         teamA, teamB = teamsBox[i].text, teamsBox[i+1].text
@@ -155,8 +166,8 @@ def bet99Football(driver, matches,leagueTeams, url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1 
 
-def bet99Soccer(driver,matches,leagueTeams, url):
-    teamsBox,oddsBox = bet99(driver,url)
+def bet99Soccer(driver,matches, leagueName,leagueTeams, url):
+    teamsBox,oddsBox = bet99(driver,url, leagueName)
     oddsIndex = 0
     for i in range(0,len(teamsBox),2):
         teamA, teamB = teamsBox[i].text, teamsBox[i+1].text

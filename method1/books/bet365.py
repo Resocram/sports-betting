@@ -4,20 +4,29 @@ from selenium.webdriver.support import expected_conditions as EC
 from match import *
 from leagues.normalize import *
 import pandas as pd
+import sys
+
 BET365_NFL_TEAM_NAME_SELECTOR = ".sac-ParticipantFixtureDetailsHigherAmericanFootball_Team"
 BET365_NHL_TEAM_NAME_SELECTOR = ".sci-ParticipantFixtureDetailsHigherIceHockey_Team"
 BET365_NBA_TEAM_NAME_SELECTOR = ".scb-ParticipantFixtureDetailsHigherBasketball_Team"
 BET365_EPL_TEAM_NAME_SELECTOR = ".rcl-ParticipantFixtureDetailsTeam_TeamName"
 BET365_ODDS_SELECTOR = ".gl-Participant_General.gl-Market_General-cn1"
+RETRY_TIMES = 5
 
-
-def bet365(driver, url, teamNameSelector):
-    driver.get(url)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, teamNameSelector)))
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET365_ODDS_SELECTOR)))
-    teamsBox = driver.find_elements(By.CSS_SELECTOR, teamNameSelector)
-    oddsBox = driver.find_elements(By.CSS_SELECTOR, BET365_ODDS_SELECTOR)
-    return teamsBox, oddsBox
+def bet365(driver, url, teamNameSelector, leagueName):
+    retrytimes = 0
+    while retrytimes < RETRY_TIMES:
+        try:
+            driver.get(url)
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, teamNameSelector)))
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BET365_ODDS_SELECTOR)))
+            teamsBox = driver.find_elements(By.CSS_SELECTOR, teamNameSelector)
+            oddsBox = driver.find_elements(By.CSS_SELECTOR, BET365_ODDS_SELECTOR)
+            return teamsBox, oddsBox
+        except:
+            retrytimes += 1
+    print("Bet365 retried " + str(RETRY_TIMES) + " times for " + leagueName)
+    sys.exit()
 
 def bet365Spread(oddsBox):
     try:
@@ -56,8 +65,8 @@ def bet3651x2(oddsBox):
 # =====================
 
 
-def bet365Hockey(driver, matches,leagueTeams, url):
-    teamsBox,oddsBox = bet365(driver,url,BET365_NHL_TEAM_NAME_SELECTOR)
+def bet365Hockey(driver, matches, leagueName,leagueTeams, url):
+    teamsBox,oddsBox = bet365(driver,url,BET365_NHL_TEAM_NAME_SELECTOR, leagueName)
     oddsIndex = 0
     matchesTmp = []
     for i in range(0,len(teamsBox),2):
@@ -86,8 +95,8 @@ def bet365Hockey(driver, matches,leagueTeams, url):
         oddsDf = pd.DataFrame.from_records([odd.__dict__],index=["bet365"])
         matches[match] = pd.concat([matches[match],oddsDf])
 
-def bet365Basketball(driver, matches, leagueTeams, url):
-    teamsBox,oddsBox = bet365(driver,url,BET365_NBA_TEAM_NAME_SELECTOR)
+def bet365Basketball(driver, matches, leagueName, leagueTeams, url):
+    teamsBox,oddsBox = bet365(driver,url,BET365_NBA_TEAM_NAME_SELECTOR, leagueName)
     oddsIndex = 0
     matchesTmp = []
     for i in range(0,len(teamsBox),2):
@@ -115,8 +124,8 @@ def bet365Basketball(driver, matches, leagueTeams, url):
         oddsDf = pd.DataFrame.from_records([odd.__dict__],index=["bet365"])
         matches[match] = pd.concat([matches[match],oddsDf])
         
-def bet365Football(driver, matches, leagueTeams, url):
-    teamsBox,oddsBox = bet365(driver,url,BET365_NFL_TEAM_NAME_SELECTOR)
+def bet365Football(driver, matches, leagueName, leagueTeams, url):
+    teamsBox,oddsBox = bet365(driver,url,BET365_NFL_TEAM_NAME_SELECTOR, leagueName)
     oddsIndex = 0
     matchesTmp = []
     for i in range(0,len(teamsBox),2):
@@ -144,8 +153,8 @@ def bet365Football(driver, matches, leagueTeams, url):
         oddsDf = pd.DataFrame.from_records([odd.__dict__],index=["bet365"])
         matches[match] = pd.concat([matches[match],oddsDf])
 
-def bet365Soccer(driver, matches, leagueTeams, url):
-    teamsBox,oddsBox = bet365(driver,url,BET365_EPL_TEAM_NAME_SELECTOR)
+def bet365Soccer(driver, matches, leagueName, leagueTeams, url):
+    teamsBox,oddsBox = bet365(driver,url,BET365_EPL_TEAM_NAME_SELECTOR, leagueName)
     oddsIndex = 0
     matchesTmp = []
     for i in range(0,len(teamsBox),2):

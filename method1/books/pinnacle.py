@@ -4,19 +4,28 @@ from selenium.webdriver.common.by import By
 from books.bet99 import *
 from leagues.normalize import *
 import pandas as pd
+import sys
 
 PINNACLE_TEAMS_SELECTOR = ".style_matchupMetadata__Ey_nj"
 PINNACLE_ODDS_SELECTOR = ".style_buttons__XEQem"
 
 LIVE = False
+RETRY_TIMES = 5
 
-def pinnacle(driver, url):
-    driver.get(url)
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, PINNACLE_TEAMS_SELECTOR)))
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, PINNACLE_ODDS_SELECTOR)))
-    teamsBox = driver.find_elements(By.CSS_SELECTOR, PINNACLE_TEAMS_SELECTOR)
-    oddsBox = driver.find_elements(By.CSS_SELECTOR, PINNACLE_ODDS_SELECTOR)
-    return teamsBox,oddsBox
+def pinnacle(driver, url, leagueName):
+    retrytimes = 0 
+    while retrytimes < RETRY_TIMES:
+        try:
+            driver.get(url)
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, PINNACLE_TEAMS_SELECTOR)))
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, PINNACLE_ODDS_SELECTOR)))
+            teamsBox = driver.find_elements(By.CSS_SELECTOR, PINNACLE_TEAMS_SELECTOR)
+            oddsBox = driver.find_elements(By.CSS_SELECTOR, PINNACLE_ODDS_SELECTOR)
+            return teamsBox,oddsBox
+        except:
+            retrytimes += 1
+    print("Pinnacle retried " + str(RETRY_TIMES) + " times for " + leagueName)
+    sys.exit()
 
 def pinnacleTeams(teams):
     teamsSplit = teams.split("\n")
@@ -67,8 +76,8 @@ def pinnacleOddsMoneyline(oddsMoneylineBox):
 # =====================
 
 
-def pinnacleHockey(driver, matches,leagueTeams, url):
-    teamsBox,oddsBox = pinnacle(driver,url)
+def pinnacleHockey(driver, matches, leagueName, leagueTeams, url):
+    teamsBox,oddsBox = pinnacle(driver,url, leagueName)
     oddsIndex = 0
     for teams in teamsBox:
         teamA,teamB, date = pinnacleTeams(teams.text)
@@ -98,8 +107,8 @@ def pinnacleHockey(driver, matches,leagueTeams, url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 3
 
-def pinnacleBasketball(driver, matches, leagueTeams, url):
-    teamsBox,oddsBox = pinnacle(driver,url)
+def pinnacleBasketball(driver, matches, leagueName , leagueTeams, url):
+    teamsBox,oddsBox = pinnacle(driver,url, leagueName)
     oddsIndex = 0
     
     for teams in teamsBox:
@@ -134,8 +143,8 @@ def pinnacleBasketball(driver, matches, leagueTeams, url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 3
 
-def pinnacleFootball(driver, matches,leagueTeams, url):
-    teamsBox,oddsBox = pinnacle(driver,url)
+def pinnacleFootball(driver, matches, leagueName,leagueTeams, url):
+    teamsBox,oddsBox = pinnacle(driver,url, leagueName)
     oddsIndex = 0
     
     for teams in teamsBox:
@@ -170,8 +179,8 @@ def pinnacleFootball(driver, matches,leagueTeams, url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 3
 
-def pinnacleSoccer(driver, matches,leagueTeams, url):
-    teamsBox,oddsBox = pinnacle(driver,url)
+def pinnacleSoccer(driver, matches, leagueName,leagueTeams, url):
+    teamsBox,oddsBox = pinnacle(driver,url, leagueName)
     oddsIndex = 0
     
     for teams in teamsBox:

@@ -5,23 +5,36 @@ import time
 from match import *
 from leagues.normalize import *
 import pandas as pd
+import sys
+
 STAKE_TEAM_NAME_SELECTOR = ".teams.stacked"
 STAKE_ODDS_SELECTOR = ".outcomes"
 STAKE_BUTTON_SELECTOR = '//*[@data-analytics="threeway-enable-button"]'
+RETRY_TIMES = 5
 
-
-def stake(driver,url):
-    driver.get(url)
-    time.sleep(5)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, STAKE_BUTTON_SELECTOR)))
-    buttonBox = driver.find_element(By.XPATH, STAKE_BUTTON_SELECTOR)
-    buttonBox.click()
-    time.sleep(5)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, STAKE_TEAM_NAME_SELECTOR)))
-    teamsBox = driver.find_elements(By.CSS_SELECTOR, STAKE_TEAM_NAME_SELECTOR)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, STAKE_ODDS_SELECTOR)))
-    oddsBox = driver.find_elements(By.CSS_SELECTOR, STAKE_ODDS_SELECTOR)
-    return teamsBox, oddsBox
+def stake(driver,url, leagueName):
+    
+    retrytimes = 0
+    while retrytimes < RETRY_TIMES:
+        try:
+            driver.get(url)
+            time.sleep(5)
+            try:
+                WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, STAKE_BUTTON_SELECTOR)))
+                buttonBox = driver.find_element(By.XPATH, STAKE_BUTTON_SELECTOR)
+                buttonBox.click()
+            except:
+                pass
+            time.sleep(5)
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, STAKE_TEAM_NAME_SELECTOR)))
+            teamsBox = driver.find_elements(By.CSS_SELECTOR, STAKE_TEAM_NAME_SELECTOR)
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, STAKE_ODDS_SELECTOR)))
+            oddsBox = driver.find_elements(By.CSS_SELECTOR, STAKE_ODDS_SELECTOR)
+            return teamsBox, oddsBox
+        except:
+            retrytimes += 1
+    print("Stake retried " + str(RETRY_TIMES) + " times for " + leagueName)
+    sys.exit()
 
 def stakeTeams(teams):
     teamsParsed = teams.text.split("\n")
@@ -34,43 +47,43 @@ def stakeTeams(teams):
 def stakeMoneyline(oddsBox):
     oddsParsed = oddsBox.text.split("\n")
     if len(oddsParsed) == 4:
-        teamAOdds = float(oddsParsed[1])
-        teamBOdds = float(oddsParsed[3])
+        teamAOdds = None if oddsParsed[1] == "Suspended" else float(oddsParsed[1])
+        teamBOdds = None if oddsParsed[3] == "Suspended" else float(oddsParsed[3])
         return teamAOdds, teamBOdds
     return None, None
 
 def stakeHandicap(oddsBox):
     oddsParsed = oddsBox.text.split("\n")
     if len(oddsParsed) == 4:
-        teamASpreadHandicap = float(oddsParsed[0])
-        teamAOddsHandicap = float(oddsParsed[1])
-        teamBSpreadHandicap = float(oddsParsed[2])
-        teamBOddsHandicap = float(oddsParsed[3])
+        teamASpreadHandicap = None if oddsParsed[0] == "Suspended" else float(oddsParsed[0])
+        teamAOddsHandicap = None if oddsParsed[1] == "Suspended" else float(oddsParsed[1])
+        teamBSpreadHandicap = None if oddsParsed[2] == "Suspended" else float(oddsParsed[2])
+        teamBOddsHandicap = None if oddsParsed[3] == "Suspended" else float(oddsParsed[3])
         return teamASpreadHandicap, teamAOddsHandicap, teamBSpreadHandicap, teamBOddsHandicap
     return None, None, None, None
 
 def stakeTotal(oddsBox):
     oddsParsed = oddsBox.text.split("\n")
     if len(oddsParsed) == 4:
-        overPoints = float(oddsParsed[0].split(" ")[1])
-        overOdds = float(oddsParsed[1])
-        underPoints = float(oddsParsed[2].split(" ")[1])
-        underOdds = float(oddsParsed[3])
+        overPoints = None if oddsParsed[0] == "Suspended" else float(oddsParsed[0].split(" ")[1])
+        overOdds = None if oddsParsed[1] == "Suspended" else float(oddsParsed[1])
+        underPoints = None if oddsParsed[2] == "Suspended" else float(oddsParsed[2].split(" ")[1])
+        underOdds = None if oddsParsed[3] == "Suspended" else float(oddsParsed[3])
         return overPoints, overOdds, underPoints, underOdds
     return None, None, None, None
 
 def stake1x2(oddsBox):
     oddsParsed = oddsBox.text.split("\n")
     if len(oddsParsed) == 6:
-        teamAOdds1x2 = float(oddsParsed[1])
-        drawOdds1x2 = float(oddsParsed[3])
-        teamBOdds1x2 = float(oddsParsed[5])
+        teamAOdds1x2 = None if oddsParsed[1] == "Suspended" else float(oddsParsed[1])
+        drawOdds1x2 = None if oddsParsed[3] == "Suspended" else float(oddsParsed[3])
+        teamBOdds1x2 = None if oddsParsed[5] == "Suspended" else float(oddsParsed[5])
         return teamAOdds1x2, drawOdds1x2, teamBOdds1x2
     return None, None, None
 
 
-def stakeBasketball(driver,matches,leagueTeams,url):
-    teamsBox, oddsBox = stake(driver,url)
+def stakeBasketball(driver,matches, leagueName,leagueTeams,url):
+    teamsBox, oddsBox = stake(driver,url, leagueName)
     oddsIndex = 0
     for i in range(0,len(teamsBox)):
         teamA, teamB = stakeTeams(teamsBox[i])
@@ -100,8 +113,8 @@ def stakeBasketball(driver,matches,leagueTeams,url):
         oddsIndex += 3
         
         
-def stakeFootball(driver,matches,leagueTeams,url):
-    teamsBox, oddsBox = stake(driver,url)
+def stakeFootball(driver,matches, leagueName,leagueTeams,url):
+    teamsBox, oddsBox = stake(driver,url, leagueName)
     oddsIndex = 0
     for i in range(0,len(teamsBox)):
         teamA, teamB = stakeTeams(teamsBox[i])
@@ -130,8 +143,8 @@ def stakeFootball(driver,matches,leagueTeams,url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 3
         
-def stakeHockey(driver,matches,leagueTeams,url):
-    teamsBox, oddsBox = stake(driver,url)
+def stakeHockey(driver,matches, leagueName,leagueTeams,url):
+    teamsBox, oddsBox = stake(driver,url, leagueName)
     oddsIndex = 0
     for i in range(0,len(teamsBox)):
         teamA, teamB = stakeTeams(teamsBox[i])
@@ -161,8 +174,8 @@ def stakeHockey(driver,matches,leagueTeams,url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 3
         
-def stakeSoccer(driver,matches,leagueTeams,url):
-    teamsBox, oddsBox = stake(driver,url)
+def stakeSoccer(driver,matches, leagueName,leagueTeams,url):
+    teamsBox, oddsBox = stake(driver,url, leagueName)
     oddsIndex = 0
     for i in range(0,len(teamsBox)):
         teamA, teamB = stakeTeams(teamsBox[i])

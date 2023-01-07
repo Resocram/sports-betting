@@ -4,19 +4,29 @@ from selenium.webdriver.common.by import By
 from match import *
 from leagues.normalize import *
 import pandas as pd
+import sys
+
 BODOG_PLUS_SELECTOR = ".icon.header-collapsible__icon.league-header-collapsible__icon.icon-plus"
 BODOG_TEAM_NAME_SELECTOR = ".competitors"
 BODOG_ODDS_SELECTOR = ".markets-container"
 BODOG_LIVE_SELECTOR_XPATH = "//span[contains(text(), 'Live Betting Odds')]"
 BODOG_SHOW_MORE_SELECTOR_ID = "showMore"
+RETRY_TIMES = 5
 
-def bodog(driver, url):
-    driver.get(url)
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)))
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)))
-    teamsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)
-    oddsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)
-    return teamsBox, oddsBox
+def bodog(driver, url, leagueName):
+    retrytimes = 0
+    while retrytimes < RETRY_TIMES:
+        try:
+            driver.get(url)
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)))
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)))
+            teamsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_TEAM_NAME_SELECTOR)
+            oddsBox = driver.find_elements(By.CSS_SELECTOR, BODOG_ODDS_SELECTOR)
+            return teamsBox, oddsBox
+        except:
+            retrytimes += 1
+    print("Bodog retried " + str(RETRY_TIMES) + " times for " + leagueName)
+    sys.exit()
     
 def bodogOddsHandicap(oddsHandicapBox):
     oddsHandicapBoxParsed = oddsHandicapBox.split(" ")
@@ -94,8 +104,8 @@ def bodogTeams(teams,numTeams=2):
 # =====================
 
 
-def bodogHockey(driver,matches,leagueTeams,url):
-    teamsBox,oddsBox = bodog(driver,url)
+def bodogHockey(driver,matches,leagueName, leagueTeams,url):
+    teamsBox,oddsBox = bodog(driver,url, leagueName)
     oddsIndex = 0
     for team in teamsBox:
         teamA, teamB = bodogTeams(team)
@@ -126,8 +136,8 @@ def bodogHockey(driver,matches,leagueTeams,url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1  
 
-def bodogBasketball(driver, matches, leagueTeams, url):
-    teamsBox,oddsBox = bodog(driver,url)
+def bodogBasketball(driver, matches, leagueName, leagueTeams, url):
+    teamsBox,oddsBox = bodog(driver,url, leagueName)
     oddsIndex = 0
     for team in teamsBox:
         teamA, teamB = bodogTeams(team)
@@ -158,8 +168,8 @@ def bodogBasketball(driver, matches, leagueTeams, url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1  
 
-def bodogFootball(driver, matches,leagueTeams, url):
-    teamsBox,oddsBox = bodog(driver,url)
+def bodogFootball(driver, matches,leagueName, leagueTeams, url):
+    teamsBox,oddsBox = bodog(driver,url, leagueName)
     oddsIndex = 0
     for team in teamsBox:
         teamA, teamB = bodogTeams(team)
@@ -190,8 +200,8 @@ def bodogFootball(driver, matches,leagueTeams, url):
         matches[match] = pd.concat([matches[match],oddsDf])
         oddsIndex += 1  
 
-def bodogSoccer(driver, matches,leagueTeams, url):
-    teamsBox,oddsBox = bodog(driver,url)
+def bodogSoccer(driver, matches, leagueName, leagueTeams, url):
+    teamsBox,oddsBox = bodog(driver,url, leagueName)
     oddsIndex = 0
     for team in teamsBox:
         teamA, teamB = bodogTeams(team,3)
