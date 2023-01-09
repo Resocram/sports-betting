@@ -70,15 +70,16 @@ while True:
     start = time.time()
     #hockey(SHL)
     #basketball(EUROLEAGUE)
-    hockey(KHL)
     soccer(LALIGA)
     hockey(NHL)
     basketball(NBA)
-    basketball(NCAAB)
     football(NFL)
+    basketball(NCAAB)
+    hockey(KHL)
+    
     soccer(EPL)
     basketball(CBA)
-    print("TAKEN" + str(time.time()-start))
+    print("TAKEN: " + str(time.time()-start) +" seconds" )
         
     
 

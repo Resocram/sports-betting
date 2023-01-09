@@ -158,13 +158,126 @@ def calculateScoreMoneyLine(oddsDf):
     else:
         return score, None, None
 
+def calculateFcMoneyline(oddsDf):
+    best = [0, None, None]
+    try:
+        maxTeamAOdds = oddsDf.loc["bet365","teamAOdds"]
+        minTeamBOdds = oddsDf["teamBOdds"].min()
+        score1 = (maxTeamAOdds-1) * (1-1/minTeamBOdds)
+        if score1 > best[0]:
+            best[0] = score1
+            best[1] = "bet365"
+            best[2] = oddsDf["teamBOdds"].idxmin()
+    except:
+        pass
+    try:
+        minTeamAOdds = oddsDf["teamAOdds"].min()
+        maxTeamBOdds = oddsDf.loc["bet365","teamBOdds"]  
+        score2 = (maxTeamBOdds-1) * (1-1/minTeamAOdds)
+        if score2 > best[0]:
+            best[0] = score2
+            best[1] = oddsDf["teamAOdds"].idxmin()
+            best[2] = "bet365"
+    except:
+        pass
+    return best
+def calculateFcHandicap(oddsDf):
+    best = [0, None, None]
+    try:
+        maxTeamAOddsHandicap = oddsDf.loc["bet365","teamAOddsHandicap"]
+        maxTeamBSpreadHandicap = oddsDf.loc["bet365","teamBSpreadHandicap"]
+        minTeamBOddsHandicap = oddsDf[oddsDf['teamBSpreadHandicap'] == maxTeamBSpreadHandicap]["teamBOddsHandicap"].min()
+        score1 = (maxTeamAOddsHandicap-1) * (1-1/minTeamBOddsHandicap)
+        if score1 > best[0]:
+            best[0] = score1
+            best[1] = "bet365"
+            best[2] = oddsDf[oddsDf["teamBOddsHandicap"] == minTeamBOddsHandicap].index[0]
+    except:
+        pass
+    try:
+        maxTeamBOddsHandicap = oddsDf.loc["bet365","teamBOddsHandicap"]
+        maxTeamASpreadHandicap = oddsDf.loc["bet365","teamASpreadHandicap"]
+        minTeamAOddsHandicap = oddsDf[oddsDf['teamASpreadHandicap'] == maxTeamASpreadHandicap]["teamAOddsHandicap"].min()
+        score2 = (maxTeamBOddsHandicap-1) * (1-1/minTeamAOddsHandicap)
+        if score2 > best[0]:
+            best[0] = score2
+            best[1] = oddsDf[oddsDf["teamAOddsHandicap"] == minTeamAOddsHandicap].index[0]
+            best[2] = "bet365"
+    except:
+        pass
+    return best
 
-def calculateScore(match, oddsDf):
+def calculateFcOverUnder(oddsDf):
+    best = [0, None, None]
+    try:
+        maxUnderOdds = oddsDf.loc["bet365","underOdds"]
+        maxUnderPoints = oddsDf.loc["bet365","underPoints"]
+        minOverOdds = oddsDf[oddsDf["underPoints"] == maxUnderPoints]["overOdds"].min()
+        score1 = (maxUnderOdds-1) * (1-1/minOverOdds)
+        if score1 > best[0]:
+            best[0] = score1
+            best[1] = "bet365"
+            best[2] = oddsDf[oddsDf["overOdds"] == minOverOdds].index[0]
+    except:
+        pass
+    try:
+        maxOverOdds = oddsDf.loc["bet365","overOdds"]
+        maxOverPoints = oddsDf.loc["bet365","overPoints"]
+        minUnderOdds = oddsDf[oddsDf["overPoints"] == maxOverPoints]["underOdds"].min()
+        score2 = (maxOverOdds-1) * (1-1/minUnderOdds)
+        if score2 > best[0]:
+            best[0] = score2
+            best[1] = oddsDf[oddsDf["underOdds"] == minUnderOdds].index[0]
+            best[2] = "bet365"
+    except:
+        pass
+    return best
     
+currmax = 0
+def calculateScore(match, oddsDf):
+    global currmax
     scoreMoneyLine = calculateScoreMoneyLine(oddsDf)
     score1x2 = calculateScore1x2(oddsDf)
     scoreHandicap = calculateScoreHandicap(oddsDf)
     scoreOverUnder = calculateScoreOverUnder(oddsDf)
+    
+    fcMoneyline = calculateFcMoneyline(oddsDf)
+    fcHandicap = calculateFcHandicap(oddsDf)
+    fcOverUnder = calculateFcOverUnder(oddsDf)
+    
+    if fcMoneyline[0] > currmax:
+        currmax = fcMoneyline[0]
+        msg = "==========" + "\n" + \
+              "New score for free bet conversion rate: " + str(currmax) + "\n" + \
+              str(match) + "\n" + \
+              str(fcMoneyline[1]) + "\n" + \
+              oddsDf.loc[fcMoneyline[1],["teamAOdds","teamBOdds"]].to_string() + "\n" + \
+              str(fcMoneyline[2]) + "\n" + \
+              oddsDf.loc[fcMoneyline[2],["teamAOdds","teamBOdds"]].to_string()+ "\n" + \
+              "=========="
+        print(msg)
+    if fcHandicap[0] > currmax:
+        currmax = fcHandicap[0]
+        msg = "==========" + "\n" + \
+              "New score for free bet conversion rate: " + str(currmax) + "\n" + \
+              str(match) + "\n" + \
+              str(fcHandicap[1]) + "\n" + \
+              oddsDf.loc[fcHandicap[1],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string() + "\n" + \
+              str(fcHandicap[2]) + "\n" + \
+              oddsDf.loc[fcHandicap[2],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string() + "\n" + \
+              "=========="
+        print(msg)
+    if fcOverUnder[0] > currmax:
+        currmax = fcOverUnder[0]
+        msg = "==========" + "\n" + \
+              "New score for free bet conversion rate: " + str(currmax) + "\n" + \
+              str(match) + "\n" + \
+              str(fcOverUnder[1]) + "\n" + \
+              oddsDf.loc[fcOverUnder[1],["underPoints","underOdds","overPoints","overOdds"]].to_string() + "\n" + \
+              str(fcOverUnder[2]) + "\n" + \
+              oddsDf.loc[fcOverUnder[2],["underPoints","underOdds","overPoints","overOdds"]].to_string() + "\n" + \
+              "=========="
+        print(msg)
     
     if scoreMoneyLine[0] < 1 and scoreMoneyLine[1] != None and scoreMoneyLine[2] != None:
         msg = "==========" + "\n" + \
@@ -183,7 +296,7 @@ def calculateScore(match, oddsDf):
               str(match) + "\n" + \
               str(score1x2[1]) + "\n" + \
               oddsDf.loc[score1x2[1],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string() + "\n" + \
-              str*score1x2[2]() + "\n" + \
+              str(score1x2[2]) + "\n" + \
               oddsDf.loc[score1x2[2],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string() + "\n" + \
               str(score1x2[3]) + "\n" + \
               oddsDf.loc[score1x2[3],["teamAOdds1x2","drawOdds1x2","teamBOdds1x2"]].to_string() + "\n" + \
@@ -226,9 +339,14 @@ def send(msg):
         "user": "ufsr1fk5oe2zcbukgszoqgrvqepeob",
         "message": msg,
     }), { "Content-type": "application/x-www-form-urlencoded" })
+    
     conn.getresponse()
-
-
+    # conn.request("POST", "/1/messages.json",
+    # urllib.parse.urlencode({
+    #     "token": "a3uxep39ni2r8cwoyks8zhfdqzf8ui",
+    #     "user": "ufpd7mm8kbs7q9f9utp2pftatdzuaa",
+    #     "message": msg,
+    # }), { "Content-type": "application/x-www-form-urlencoded" })
 
 # TODO: Add support for middle betting
 # def calculateScoreMiddleHandicap(odd1,odd2):
