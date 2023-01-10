@@ -233,51 +233,11 @@ def calculateFcOverUnder(oddsDf):
         pass
     return best
     
-currmax = 0
 def calculateScore(match, oddsDf):
-    global currmax
     scoreMoneyLine = calculateScoreMoneyLine(oddsDf)
     score1x2 = calculateScore1x2(oddsDf)
     scoreHandicap = calculateScoreHandicap(oddsDf)
     scoreOverUnder = calculateScoreOverUnder(oddsDf)
-    
-    fcMoneyline = calculateFcMoneyline(oddsDf)
-    fcHandicap = calculateFcHandicap(oddsDf)
-    fcOverUnder = calculateFcOverUnder(oddsDf)
-    
-    if fcMoneyline[0] > currmax:
-        currmax = fcMoneyline[0]
-        msg = "==========" + "\n" + \
-              "New score for free bet conversion rate: " + str(currmax) + "\n" + \
-              str(match) + "\n" + \
-              str(fcMoneyline[1]) + "\n" + \
-              oddsDf.loc[fcMoneyline[1],["teamAOdds","teamBOdds"]].to_string() + "\n" + \
-              str(fcMoneyline[2]) + "\n" + \
-              oddsDf.loc[fcMoneyline[2],["teamAOdds","teamBOdds"]].to_string()+ "\n" + \
-              "=========="
-        print(msg)
-    if fcHandicap[0] > currmax:
-        currmax = fcHandicap[0]
-        msg = "==========" + "\n" + \
-              "New score for free bet conversion rate: " + str(currmax) + "\n" + \
-              str(match) + "\n" + \
-              str(fcHandicap[1]) + "\n" + \
-              oddsDf.loc[fcHandicap[1],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string() + "\n" + \
-              str(fcHandicap[2]) + "\n" + \
-              oddsDf.loc[fcHandicap[2],["teamASpreadHandicap","teamAOddsHandicap","teamBSpreadHandicap","teamBOddsHandicap"]].to_string() + "\n" + \
-              "=========="
-        print(msg)
-    if fcOverUnder[0] > currmax:
-        currmax = fcOverUnder[0]
-        msg = "==========" + "\n" + \
-              "New score for free bet conversion rate: " + str(currmax) + "\n" + \
-              str(match) + "\n" + \
-              str(fcOverUnder[1]) + "\n" + \
-              oddsDf.loc[fcOverUnder[1],["underPoints","underOdds","overPoints","overOdds"]].to_string() + "\n" + \
-              str(fcOverUnder[2]) + "\n" + \
-              oddsDf.loc[fcOverUnder[2],["underPoints","underOdds","overPoints","overOdds"]].to_string() + "\n" + \
-              "=========="
-        print(msg)
     
     if scoreMoneyLine[0] < 1 and scoreMoneyLine[1] != None and scoreMoneyLine[2] != None:
         msg = "==========" + "\n" + \

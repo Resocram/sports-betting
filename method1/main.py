@@ -20,7 +20,9 @@ def compute(league, functions):
     matches = defaultdict(pd.DataFrame)
     threads = []
     for i in range(len(functions)):
-        driver = uc.Chrome()
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        driver = uc.Chrome(options=options)
         driver.set_window_size(1440, 1440)
         t = threading.Thread(target=functions[i],args=(driver,matches,league.name, league.teams,league.urls[i]))
         threads.append((t,driver))
@@ -68,15 +70,14 @@ def printer(matches):
         print(matches[match])
 while True:
     start = time.time()
-    #hockey(SHL)
-    #basketball(EUROLEAGUE)
+    hockey(SHL)
+    basketball(EUROLEAGUE)
     soccer(LALIGA)
     hockey(NHL)
     basketball(NBA)
     football(NFL)
     basketball(NCAAB)
     hockey(KHL)
-    
     soccer(EPL)
     basketball(CBA)
     print("TAKEN: " + str(time.time()-start) +" seconds" )
