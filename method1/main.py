@@ -21,8 +21,9 @@ def compute(league, functions):
     threads = []
     for i in range(len(functions)):
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        driver = uc.Chrome(options=options)
+        if i != 1:
+            options.add_argument('--headless') 
+        driver = uc.Chrome(options=options,driver_executable_path="C:/Users/Marco/Desktop/Me/projects/starbucks/chromedriver_win32/chromedriver.exe")
         driver.set_window_size(1440, 1440)
         t = threading.Thread(target=functions[i],args=(driver,matches,league.name, league.teams,league.urls[i]))
         threads.append((t,driver))
@@ -37,28 +38,28 @@ def compute(league, functions):
     return matches
 
 def hockey(league):
-    functions = [stakeHockey, bet365Hockey, bet99Hockey, bodogHockey,pinnacleHockey]
+    functions = [stakeHockey, bet365Hockey, bet99Hockey, bodogHockey]
     matches = compute(league,functions)
     comparator(matches)
     print("done " + league.name)
     return matches
 
 def basketball(league):
-    functions = [stakeBasketball, bet365Basketball, bet99Basketball, bodogBasketball,pinnacleBasketball]
+    functions = [stakeBasketball, bet365Basketball, bet99Basketball, bodogBasketball]
     matches = compute(league,functions)
     comparator(matches)
     print("done " + league.name)
     return matches
     
 def football(league):
-    functions = [stakeFootball, bet365Football, bet99Football, bodogFootball, pinnacleFootball]
+    functions = [stakeFootball, bet365Football, bet99Football, bodogFootball]
     matches = compute(league,functions)
     comparator(matches)
     print("done " + league.name)
     return matches
 
 def soccer(league):
-    functions = [stakeSoccer, bet365Soccer, bet99Soccer, bodogSoccer, pinnacleSoccer]
+    functions = [stakeSoccer, bet365Soccer, bet99Soccer, bodogSoccer]
     matches = compute(league,functions)
     comparator(matches)
     print("done " + league.name)
@@ -73,6 +74,7 @@ while True:
     hockey(SHL)
     basketball(EUROLEAGUE)
     soccer(LALIGA)
+    basketball(NBL)
     hockey(NHL)
     basketball(NBA)
     football(NFL)

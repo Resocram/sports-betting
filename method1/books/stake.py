@@ -19,6 +19,7 @@ def stake(driver,url, leagueName):
         try:
             driver.get(url)
             time.sleep(5)
+            driver.get_screenshot_as_file("screenshot3.png")
             try:
                 WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, STAKE_BUTTON_SELECTOR)))
                 buttonBox = driver.find_element(By.XPATH, STAKE_BUTTON_SELECTOR)

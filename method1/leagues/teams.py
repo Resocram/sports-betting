@@ -614,3 +614,16 @@ LIIGA_TEAMS = [
     "TPS",
     "Ässät"
 ]
+
+NBL_TEAMS = [
+    "Adelaide 36ers",
+    "Brisbane Bullets",
+    "Cairns Taipans",
+    "Illawarra Hawks",
+    "Melbourne United",
+    "New Zealand Breakers",
+    "Perth Wildcats",
+    "South East Melbourne Phoenix",
+    "Sydney Kings",
+    "Tasmania JackJumpers"
+]
