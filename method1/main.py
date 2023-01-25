@@ -24,7 +24,7 @@ def compute(league, functions):
         if i != 1:
             options.add_argument('--headless') 
         driver = uc.Chrome(options=options,driver_executable_path="C:/Users/Marco/Desktop/Me/projects/starbucks/chromedriver_win32/chromedriver.exe")
-        driver.set_window_size(1440, 1440)
+        driver.set_window_size(1400, 1000)
         t = threading.Thread(target=functions[i],args=(driver,matches,league.name, league.teams,league.urls[i]))
         threads.append((t,driver))
         t.start()
@@ -38,28 +38,28 @@ def compute(league, functions):
     return matches
 
 def hockey(league):
-    functions = [stakeHockey, bet365Hockey, bet99Hockey, bodogHockey]
+    functions = [stakeHockey, bet365Hockey, bet99Hockey, bodogHockey, pinnacleHockey]
     matches = compute(league,functions)
     comparator(matches)
     print("done " + league.name)
     return matches
 
 def basketball(league):
-    functions = [stakeBasketball, bet365Basketball, bet99Basketball, bodogBasketball]
+    functions = [stakeBasketball, bet365Basketball, bet99Basketball, bodogBasketball, pinnacleBasketball]
     matches = compute(league,functions)
     comparator(matches)
     print("done " + league.name)
     return matches
     
 def football(league):
-    functions = [stakeFootball, bet365Football, bet99Football, bodogFootball]
+    functions = [stakeFootball, bet365Football, bet99Football, bodogFootball,pinnacleFootball]
     matches = compute(league,functions)
     comparator(matches)
     print("done " + league.name)
     return matches
 
 def soccer(league):
-    functions = [stakeSoccer, bet365Soccer, bet99Soccer, bodogSoccer]
+    functions = [stakeSoccer, bet365Soccer, bet99Soccer, bodogSoccer,pinnacleSoccer]
     matches = compute(league,functions)
     comparator(matches)
     print("done " + league.name)
@@ -71,17 +71,18 @@ def printer(matches):
         print(matches[match])
 while True:
     start = time.time()
+    hockey(NHL)
+    basketball(NBA)
+    football(NFL)
     hockey(SHL)
     basketball(EUROLEAGUE)
     soccer(LALIGA)
     basketball(NBL)
-    hockey(NHL)
-    basketball(NBA)
-    football(NFL)
     basketball(NCAAB)
     hockey(KHL)
     soccer(EPL)
-    basketball(CBA)
+    #basketball(CBA)
+    basketball(CHINA_NBL)
     print("TAKEN: " + str(time.time()-start) +" seconds" )
         
     

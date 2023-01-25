@@ -627,3 +627,22 @@ NBL_TEAMS = [
     "Sydney Kings",
     "Tasmania JackJumpers"
 ]
+
+CHINA_NBL_TEAMS = [
+    "Anhui Putian Xingfa",
+    "Anhui Wenyi",
+    "Beijing Oriental Bucks",
+    "Changsha Wantian Yongs",
+    "Chongqing Lanling",
+    "Guangxi Weizhuang",
+    "Hebei Xianglan",
+    "Hefei Yuanchang",
+    "Henan Shedian Laojiu",
+    "Hunan Jinjian Rice Industry",
+    "Jiangsu Yannan Suke",
+    "Luoyang Zhonghe",
+    "Shaanxi Xinda",
+    "Wuhan Dangdai",
+    "Wuhan Kungpeng",
+    "Xinjiang Tianshan Eagle"
+]
